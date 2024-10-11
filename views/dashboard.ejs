@@ -9,17 +9,64 @@
   <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
-  <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
   <link rel="stylesheet" href="css/vertical-layout-light/style.css">
   <link rel="shortcut icon" href="images/enervision.png" />
-
-  <head>
-    <link rel="stylesheet" href="/views/styles/styles.css">
-  </head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 
 </head>
 
+<style>
+  .btn-primary {
+    padding: 10px 30px;
+    border-radius: 5px;
+    background-color: #1BBC9B;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 50%;
+    display: block;
+    margin: auto;
+}
+
+.btn-primary:hover {
+    background-color: #009883;
+}
+.date-picker-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.form-group {
+    flex: 1;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    color: #333;
+}
+
+input[type="date"] {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+</style>
 <body>
   <div class="container-scroller">
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -98,17 +145,16 @@
           </li>
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-              <img src=" <%= admin.picture %>" alt="profile" />
+              <img src="<%= admin.picture %>" alt="profile" />
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item">
                 <i class="ti-settings text-primary"></i>
                 Settings
               </a>
-              <a href="/logout" class="dropdown-item">
+              <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                 <i class="ti-power-off text-primary"></i>
                 Logout
-
               </a>
             </div>
           </li>
@@ -124,9 +170,26 @@
         </button>
       </div>
     </nav>
-    <!-- partial -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to log out?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <a id="confirmLogout" class="btn btn-primary" href="/logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_settings-panel.html -->
       <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
@@ -421,18 +484,16 @@
           <div class="row">
             <div class="col-md-12 grid-margin">
               <div class="row">
-                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
-                  <h3 class="font-weight-bold">Welcome <% if (admin) { %>
+                <div class="col-12 col-xl-8 mb-xl-0">
+                  <h3 class="font-weight-bold mb-3">Welcome <% if (admin) { %>
                       <%= admin.name %>
-                        <br>
-                        <p>Email: <%= admin.email %>
+                        <p class="mt-3">Email: <%= admin.email %>
                         </p>
                         <% } else { %>
                           <p>Access denied. Please <a href="/login">login</a> to view this page.</p>
                           <% } %>
                   </h3>
-                  <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span
-                      class="text-primary">3 unread alerts!</span></h6>
+                  <h6 class="font-weight-normal mb-0">Everything is operating efficiently! You currently have <span class="text-primary">3 new notifications!</span></h6>
                 </div>
                 <div class="col-12 col-xl-4">
                   <div class="justify-content-end d-flex">
@@ -475,10 +536,10 @@
                   </div>
                 </div>
               </div>
-  
-          
+
+
             </div>
-          
+
             <div class="col-md-6 grid-margin transparent">
               <div class="row">
                 <div class="col-md-6 mb-4 stretch-card transparent">
@@ -502,7 +563,7 @@
                   </div>
                 </div>
               </div>
-          
+
               <div class="row">
                 <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
                   <div class="card card-light-blue">
@@ -517,82 +578,99 @@
                 <div class="col-md-6 stretch-card transparent">
                   <div class="card card-light-danger">
                     <div class="card-body">
-                      <p class="mb-4">Number of Clients</p>
-                      <p class="fs-30 mb-2">47033</p>
-                      <p>0.22% (30 days)</p>
+                      <p class="mb-4">Total Appliances Added Today</p>
+                      <p class="fs-30 mb-2">
+                        <%= appliancesAddedToday %>
+                      </p>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
-          </div>
-          
-          <script>
-            async function getWeather() {
-              if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                  const lat = position.coords.latitude;
-                  const lon = position.coords.longitude;
-                  const apiKey = 'cc17fb5969437a0c17f059b7ed70a352'; 
-                  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
-          
-                  try {
-                    const response = await fetch(weatherUrl);
-                    
-                    if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-          
-                    const data = await response.json();
-                    const temperature = Math.round(data.main.temp);
-                    const location = data.name;
-                    const country = data.sys.country;
-                    const icon = data.weather[0].icon;
-                    
-                    document.getElementById('temperature').textContent = temperature;
-                    document.getElementById('location').textContent = location;
-                    document.getElementById('country').textContent = country;
-                    
-                    document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-                  } catch (error) {
-                    console.error('Error fetching weather data:', error);
-                    alert('Failed to fetch weather data. Please try again later.');
-                  }
-                }, (error) => {
-                  console.error('Error getting location:', error);
-                  alert('Unable to retrieve your location. Please check your settings.'); 
-                });
-              } else {
-                console.error('Geolocation is not supported by this browser.');
-                alert('Geolocation is not supported by your browser.');
-              }
-            }
-          
-            window.onload = getWeather;
-          </script>
-          
-          
 
+            <script>
+              async function getWeather() {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const apiKey = 'cc17fb5969437a0c17f059b7ed70a352';
+                    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+
+                    try {
+                      const response = await fetch(weatherUrl);
+
+                      if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                      }
+
+                      const data = await response.json();
+                      const temperature = Math.round(data.main.temp);
+                      const location = data.name;
+                      const country = data.sys.country;
+                      const icon = data.weather[0].icon;
+
+                      document.getElementById('temperature').textContent = temperature;
+                      document.getElementById('location').textContent = location;
+                      document.getElementById('country').textContent = country;
+
+                      document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+                    } catch (error) {
+                      console.error('Error fetching weather data:', error);
+                      alert('Failed to fetch weather data. Please try again later.');
+                    }
+                  }, (error) => {
+                    console.error('Error getting location:', error);
+                    alert('Unable to retrieve your location. Please check your settings.');
+                  });
+                } else {
+                  console.error('Geolocation is not supported by this browser.');
+                  alert('Geolocation is not supported by your browser.');
+                }
+              }
+
+              window.onload = getWeather;
+            </script>
+          </div>
           <div class="row">
             <div class="col-md-6 grid-margin stretch-card">
-              <div class="card">
+              <div class="card" style="overflow-y: auto; max-height: 500px;">
                 <div class="card-body">
-                  <p class="card-title">Order Details</p>
-                  <p class="font-weight-500">The total number of sessions within the date range.</p>
-                  <div class="d-flex flex-wrap mb-5">
-                    <div class="mr-5 mt-3">
-                      <p class="text-muted">Total Users</p>
-                      <h3 class="text-primary fs-30 font-weight-medium" id="total-users">$total-users</h3>
+                  <h5 class="card-title">User Appliances Details</h5>
+                  <div class="d-flex flex-wrap mb-3">
+                    <div class="me-5">
+                      <p class="text-muted">Total Count of Appliances</p>
+                      <h3 class="text-primary fs-4 fw-bold" id="total-appliances">
+                        <%= totalAppliances %>
+                      </h3>
                     </div>
-                    <div class="mr-5 mt-3">
-                      <p class="text-muted">Registered Today</p>
-                      <h3 class="text-primary fs-30 font-weight-medium" id="registered-today">$registered-today</h3>
+                    <div>
+                      <p class="text-muted ml-5">Added Appliances Today</p>
+                      <h3 class="text-primary fs-4 fw-bold ml-5" id="added-appliances-today">
+                        <%= appliancesAddedToday %>
+                      </h3>
                     </div>
                   </div>
-                  <canvas id="order-chart"></canvas>
+                  <div class="date-picker-row">
+                    <div class="form-group">
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" id="start-date" class="form-control date-picker" />
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">End Date:</label>
+                        <input type="date" id="end-date" class="form-control date-picker" />
+                    </div>
                 </div>
-              </div>
+                
+                <button id="filter-button" class="btn btn-primary">Filter</button>
+
+                <div class="chart-container mt-4">
+                    <canvas id="chart" style="height: 400px; width: 100%;"></canvas>
+                </div>
             </div>
+        </div>
+        </div>
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -606,100 +684,165 @@
                 </div>
               </div>
             </div>
-            <div id="chart-data" data-months="<%= JSON.stringify(months) %>"
-              data-user-counts="<%= JSON.stringify(userCounts) %>"></div>
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script type="text/javascript">
-              document.addEventListener('DOMContentLoaded', function () {
-                const chartDataElement = document.getElementById('chart-data');
-                let monthsData, userCountsData;
-                try {
-                  monthsData = JSON.parse(chartDataElement.getAttribute('data-months'));
-                  userCountsData = JSON.parse(chartDataElement.getAttribute('data-user-counts'));
-                } catch (error) {
-                  console.error("Error parsing chart data attributes:", error);
-                  return;
-                }
-                const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const userCountsPerMonth = new Array(12).fill(0);
-                monthsData.forEach((month, index) => {
-                  const monthIndex = new Date(month + "-01").getMonth();
-                  if (!isNaN(monthIndex)) {
-                    userCountsPerMonth[monthIndex] = userCountsData[index];
-                  }
-                });
-                const ctx = document.getElementById('monthly-chart').getContext('2d');
-                const salesChart = new Chart(ctx, {
-                  type: 'bar',
+          </div>
+
+          <div id="chart-data" data-appliance-days="<%= JSON.stringify(applianceDays || []) %>"
+            data-average-appliance-counts="<%= JSON.stringify(averageApplianceCounts || []) %>"
+            data-months="<%= JSON.stringify(months) %>" data-user-counts="<%= JSON.stringify(userCounts) %>"></div>
+
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+          <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+              const chartDataElement = document.getElementById('chart-data');
+
+              let applianceDays, averageApplianceCounts;
+              try {
+                applianceDays = JSON.parse(chartDataElement.getAttribute('data-appliance-days'));
+                averageApplianceCounts = JSON.parse(chartDataElement.getAttribute('data-average-appliance-counts'));
+              } catch (error) {
+                console.error("Error parsing order chart data attributes:", error);
+                return;
+              }
+
+              function renderChart(days, averages) {
+                const ctxOrder = document.getElementById('chart').getContext('2d');
+                const orderChart = new Chart(ctxOrder, {
+                  type: 'line',
                   data: {
-                    labels: allMonths,
+                    labels: days,
                     datasets: [{
-                      label: 'Monthly Registered Users',
-                      data: userCountsPerMonth,
-                      backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                      label: 'Average Appliances Added Per Day',
+                      data: averages,
                       borderColor: 'rgba(75, 192, 192, 1)',
+                      backgroundColor: 'rgba(75, 192, 192, 0.2)',
                       borderWidth: 2,
-                      hoverBackgroundColor: 'rgba(75, 192, 192, 0.8)',
-                      hoverBorderColor: 'rgba(75, 192, 192, 1)',
-                      borderRadius: 5
+                      fill: true
                     }]
                   },
                   options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: true,
-                        labels: {
-                          font: {
-                            size: 14
-                          }
-                        }
-                      },
-                      tooltip: {
-                        backgroundColor: 'rgba(75, 192, 192, 0.9)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                      }
-                    },
                     scales: {
                       y: {
-                        beginAtZero: true,
-                        title: {
-                          display: true,
-                          text: 'Number of Registered Users',
-                          font: {
-                            size: 16
-                          }
-                        },
-                        ticks: {
-                          color: '#333',
-                          font: {
-                            size: 12
-                          }
-                        }
-                      },
-                      x: {
-                        title: {
-                          display: true,
-                          text: 'Months of the Year',
-                          font: {
-                            size: 16
-                          }
-                        },
-                        ticks: {
-                          color: '#333',
-                          font: {
-                            size: 12
-                          }
-                        }
+                        beginAtZero: true
                       }
                     }
                   }
                 });
+              }
+
+              renderChart(applianceDays, averageApplianceCounts);
+
+              let monthsData, userCountsData;
+              try {
+                monthsData = JSON.parse(chartDataElement.getAttribute('data-months'));
+                userCountsData = JSON.parse(chartDataElement.getAttribute('data-user-counts'));
+              } catch (error) {
+                console.error("Error parsing monthly chart data attributes:", error);
+                return;
+              }
+
+              const allMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+              const userCountsPerMonth = new Array(12).fill(0);
+
+              monthsData.forEach((month, index) => {
+                const monthIndex = new Date(month + "-01").getMonth();
+                if (!isNaN(monthIndex)) {
+                  userCountsPerMonth[monthIndex] = userCountsData[index];
+                }
               });
-            </script>
-          </div>
+
+              const ctxMonthly = document.getElementById('monthly-chart').getContext('2d');
+              const salesChart = new Chart(ctxMonthly, {
+                type: 'bar',
+                data: {
+                  labels: allMonths,
+                  datasets: [{
+                    label: 'Monthly Registered Users',
+                    data: userCountsPerMonth,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    hoverBackgroundColor: 'rgba(75, 192, 192, 0.8)',
+                    hoverBorderColor: 'rgba(75, 192, 192, 1)',
+                    borderRadius: 5
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      display: true,
+                      labels: {
+                        font: {
+                          size: 14
+                        }
+                      }
+                    },
+                    tooltip: {
+                      backgroundColor: 'rgba(75, 192, 192, 0.9)',
+                      titleColor: '#fff',
+                      bodyColor: '#fff',
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'Number of Registered Users',
+                        font: {
+                          size: 16
+                        }
+                      },
+                      ticks: {
+                        color: '#333',
+                        font: {
+                          size: 12
+                        }
+                      }
+                    },
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Months of the Year',
+                        font: {
+                          size: 16
+                        }
+                      },
+                      ticks: {
+                        color: '#333',
+                        font: {
+                          size: 12
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+
+              // Filter by date range
+              document.getElementById('filter-button').addEventListener('click', function () {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+
+                if (!startDate || !endDate) {
+                  alert("Please select both start and end dates.");
+                  return;
+                }
+
+                // Make an API call to get new data for the selected date range
+                fetch(`/api/average-appliances?start=${startDate}&end=${endDate}`)
+                  .then(response => response.json())
+                  .then(data => {
+                    renderChart(data.applianceDays, data.averageApplianceCounts);
+                  })
+                  .catch(error => {
+                    console.error("Error fetching average appliances data:", error);
+                  });
+              });
+            });
+          </script>
 
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
@@ -773,6 +916,7 @@
           </footer>
         </div>
       </div>
+      
       <script src="vendors/js/vendor.bundle.base.js"></script>
       <script src="vendors/chart.js/Chart.min.js"></script>
       <script src="vendors/datatables.net/jquery.dataTables.js"></script>

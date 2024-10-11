@@ -74,12 +74,114 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/api/average-appliances', async (req, res) => {
+    const { start, end } = req.query;
+
+    if (!start || !end) {
+        return res.status(400).json({ error: "Start and end dates are required." });
+    }
+
+    try {
+        // Calculate average appliances per day within the specified date range
+        const applianceData = await User.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: new Date(start), $lte: new Date(end) }
+                }
+            },
+            {
+                $project: {
+                    day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    appliancesCount: { $size: "$appliances" }
+                }
+            },
+            {
+                $group: {
+                    _id: "$day",
+                    totalAppliances: { $sum: "$appliancesCount" },
+                    userCount: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    date: "$_id",
+                    averageAppliances: {
+                        $cond: {
+                            if: { $gt: ["$userCount", 0] },
+                            then: { $divide: ["$totalAppliances", "$userCount"] },
+                            else: 0
+                        }
+                    }
+                }
+            },
+            {
+                $sort: { date: 1 }
+            }
+        ]);
+
+        const totalAppliancesInDateRange = applianceData.reduce((acc, entry) => acc + entry.totalAppliances, 0);
+
+        // Get today's date range
+        const today = new Date();
+        const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+        // Calculate appliances added today
+        const appliancesAddedTodayData = await User.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: startOfToday, $lt: endOfToday }
+                }
+            },
+            {
+                $project: {
+                    totalAppliances: { $size: "$appliances" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$totalAppliances" }
+                }
+            }
+        ]);
+
+        const appliancesAddedTodayCount = appliancesAddedTodayData[0]?.total || 0;
+
+        // Calculate total appliances stored for all users
+        const totalAppliancesData = await User.aggregate([
+            {
+                $project: {
+                    totalAppliances: { $size: "$appliances" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$totalAppliances" }
+                }
+            }
+        ]);
+
+        const totalAppliances = totalAppliancesData[0]?.total || 0;
+
+        res.json({ 
+            applianceDays: applianceData.map(entry => entry.date), 
+            averageApplianceCounts: applianceData.map(entry => entry.averageAppliances),
+            totalAppliances: totalAppliancesInDateRange,
+            appliancesTodayCount: appliancesAddedTodayCount,
+            totalAppliancesStored: totalAppliances // Include total appliances stored for all users
+        });
+    } catch (error) {
+        console.error("Error fetching average appliances data:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 router.get('/dashboard', authenticateToken, async (req, res) => {
     try {
         const admin = await Admin.findById(req.admin.id).select('-password');
-        if (!admin) {
-            return res.status(404).send('Admin not found');
-        }
+        if (!admin) return res.status(404).send('Admin not found');
 
         const users = await User.find();
         const userIds = users.map(user => user._id);
@@ -102,7 +204,8 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                 status: user.status,
                 createdAt: user.createdAt,
                 occupation: profile ? profile.occupation : 'Not specified',
-                postCount: userPosts ? userPosts.postCount : 0
+                postCount: userPosts ? userPosts.postCount : 0,
+                applianceCount: user.appliances.length // Count of appliances for each user
             };
         });
 
@@ -110,22 +213,86 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-        const usersRegisteredToday = await User.countDocuments({
-            createdAt: { $gte: startOfToday, $lt: endOfToday }
-        });
-
+        const usersRegisteredToday = await User.countDocuments({ createdAt: { $gte: startOfToday, $lt: endOfToday } });
         const totalUsers = await User.countDocuments();
-        const postsAddedToday = await Post.countDocuments({
-            createdAt: { $gte: startOfToday, $lt: endOfToday }
-        });
+        const postsAddedToday = await Post.countDocuments({ createdAt: { $gte: startOfToday, $lt: endOfToday } });
+
+        // Get total appliances for all users (not just today's)
+        const totalAppliancesData = await User.aggregate([
+            {
+                $project: {
+                    totalAppliances: { $size: "$appliances" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$totalAppliances" }
+                }
+            }
+        ]);
+
+        const totalAppliances = totalAppliancesData[0]?.total || 0;
+
+        const appliancesAddedTodayData = await User.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: startOfToday, $lt: endOfToday }
+                }
+            },
+            {
+                $project: {
+                    totalAppliances: { $size: "$appliances" }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$totalAppliances" }
+                }
+            }
+        ]);
+
+        const appliancesAddedTodayCount = appliancesAddedTodayData[0]?.total || 0;
 
         const monthlyRegisteredUsers = await User.aggregate([
-            { $group: { _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, count: { $sum: 1 } } },
+            { 
+                $group: { 
+                    _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, 
+                    count: { $sum: 1 } 
+                } 
+            },
             { $sort: { _id: 1 } }
         ]);
 
         const months = monthlyRegisteredUsers.map(entry => entry._id);
         const userCounts = monthlyRegisteredUsers.map(entry => entry.count);
+
+        const applianceCountsPerDay = await User.aggregate([
+            { 
+                $project: { 
+                    day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
+                    appliances: { $size: "$appliances" } 
+                } 
+            },
+            { 
+                $group: { 
+                    _id: "$day", 
+                    totalAppliances: { $sum: "$appliances" }, 
+                    userCount: { $sum: 1 } 
+                } 
+            },
+            { 
+                $project: { 
+                    date: "$_id", 
+                    averageAppliances: { $divide: ["$totalAppliances", "$userCount"] } 
+                } 
+            },
+            { $sort: { date: 1 } }
+        ]);
+
+        const applianceDays = applianceCountsPerDay.map(entry => entry.date);
+        const averageApplianceCounts = applianceCountsPerDay.map(entry => entry.averageAppliances);
 
         res.render('dashboard', {
             admin,
@@ -133,14 +300,20 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             usersRegisteredToday,
             totalUsers,
             postsAddedToday,
+            totalAppliances, // This is now the total number of appliances for all users
+            appliancesAddedToday: appliancesAddedTodayCount, // This is only today's appliances
             months,
-            userCounts
+            userCounts,
+            applianceDays,
+            averageApplianceCounts,
         });
     } catch (error) {
         console.error('Error fetching data:', error);
         res.status(500).send('Server error');
     }
 });
+
+
 
 router.get('/userposts', authenticateToken, async (req, res) => {
     try {
