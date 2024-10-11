@@ -318,9 +318,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 router.get('/userposts', authenticateToken, async (req, res) => {
     try {
         const admin = await Admin.findById(req.admin.id).select('-password');
-        if (!admin) {
-            return res.status(404).send('Admin not found');
-        }
+        if (!admin) return res.status(404).send('Admin not found');
 
         const searchTerm = req.query.username || '';
         const users = await User.find({ username: { $regex: searchTerm, $options: 'i' } });
