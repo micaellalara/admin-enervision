@@ -454,6 +454,7 @@
             </div>
           </div>
           <div class="row">
+            <!-- Weather Info Card -->
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card tale-bg">
                 <div class="card-people mt-auto">
@@ -461,17 +462,23 @@
                   <div class="weather-info">
                     <div class="d-flex">
                       <div>
-                        <h2 class="mb-0 font-weight-normal"><i class="icon-sun mr-2"></i>31<sup>C</sup></h2>
+                        <h2 class="mb-0 font-weight-normal">
+                          <img id="weather-icon" src="" alt="Weather Icon" style="width: 50px; height: 50px;" />
+                          <span id="temperature"></span><sup>C</sup>
+                        </h2>
                       </div>
-                      <div class="ml-2">
-                        <h4 class="location font-weight-normal">Bangalore</h4>
-                        <h6 class="font-weight-normal">India</h6>
+                      <div class="ml-3">
+                        <h4 class="location font-weight-normal" id="location"></h4>
+                        <h6 class="font-weight-normal" id="country"></h6>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+  
+          
             </div>
+          
             <div class="col-md-6 grid-margin transparent">
               <div class="row">
                 <div class="col-md-6 mb-4 stretch-card transparent">
@@ -495,6 +502,7 @@
                   </div>
                 </div>
               </div>
+          
               <div class="row">
                 <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
                   <div class="card card-light-blue">
@@ -518,6 +526,53 @@
               </div>
             </div>
           </div>
+          
+          <script>
+            async function getWeather() {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                  const lat = position.coords.latitude;
+                  const lon = position.coords.longitude;
+                  const apiKey = 'cc17fb5969437a0c17f059b7ed70a352'; 
+                  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+          
+                  try {
+                    const response = await fetch(weatherUrl);
+                    
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+          
+                    const data = await response.json();
+                    const temperature = Math.round(data.main.temp);
+                    const location = data.name;
+                    const country = data.sys.country;
+                    const icon = data.weather[0].icon;
+                    
+                    document.getElementById('temperature').textContent = temperature;
+                    document.getElementById('location').textContent = location;
+                    document.getElementById('country').textContent = country;
+                    
+                    document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+                  } catch (error) {
+                    console.error('Error fetching weather data:', error);
+                    alert('Failed to fetch weather data. Please try again later.');
+                  }
+                }, (error) => {
+                  console.error('Error getting location:', error);
+                  alert('Unable to retrieve your location. Please check your settings.'); 
+                });
+              } else {
+                console.error('Geolocation is not supported by this browser.');
+                alert('Geolocation is not supported by your browser.');
+              }
+            }
+          
+            window.onload = getWeather;
+          </script>
+          
+          
+
           <div class="row">
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
