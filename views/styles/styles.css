@@ -1,0 +1,55 @@
+.table-responsive {
+    position: relative;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    position: sticky; /* Make the header sticky */
+    top: 0; /* Position it at the top of the scrolling container */
+    background-color: #f8f9fa; /* Match this to your table header color */
+    z-index: 10; /* Ensure the header is above other content */
+}
+
+
+.card-header {
+    background-color: #f8f9fa; /* Light background for header */
+    font-weight: bold;
+}
+
+.list-group-item {
+    border: 1px solid #dee2e6; /* Slight border for items */
+}
+
+.list-group-item:hover {
+    background-color: #f1f1f1; /* Highlight on hover */
+}
+
+.header {
+    font-size: 24px; /* Adjust font size */
+    font-weight: bold; /* Make the text bold */
+    color: #343a40; /* Text color */
+}
+
+.header-icon {
+    width: 40px; /* Adjust icon size */
+    height: 40px; /* Adjust icon size */
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.input-group {
+    margin-top: 20px; /* Add spacing above the search bar */
+}
+
+.form-control {
+    border: 1px solid #ced4da; /* Border color */
+    border-radius: 10px; /* Rounded corners */
+}
+
+.btn-primary {
+    border-radius: 10px; /* Rounded corners for button */
+}

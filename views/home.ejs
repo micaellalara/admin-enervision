@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnerVision Admin</title>
+    <link rel="shortcut icon" href="/images/enervision.png" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #A8D5BA, #D7E8F7);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Main Container */
+        .split-container {
+            display: flex;
+            flex-direction: row;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* Left side (Image or illustration) */
+        .left-panel {
+            background: linear-gradient(135deg, #A8D5BA, #2C5F2D);
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .left-panel img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        /* Right side (Text and buttons) */
+        .right-panel {
+            flex: 2;
+            background-color: #F5F5DC;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .right-panel h1 {
+            font-size: 36px;
+            color: #2C5F2D;
+            margin-bottom: 20px;
+        }
+
+        .right-panel p {
+            font-size: 16px;
+            color: #8C644A;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            background-color: #2C5F2D;
+            color: white;
+            padding: 12px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            margin: 10px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #1E3920;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .split-container {
+                flex-direction: column;
+                max-width: 100%;
+                height: auto;
+            }
+
+            .left-panel {
+                padding: 20px;
+            }
+
+            .right-panel {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Left Panel with Image or Visual -->
+        <div class="left-panel">
+            <img src="/images/enervision.png" alt="EnerVision Logo">
+        </div>
+
+        <!-- Right Panel with Welcome Message and Buttons -->
+        <div class="right-panel">
+            <h1 style="font-size: 40px;">Welcome to EnerVision Dashboard!</h1>
+            <p>Hello! Let's get started. Please sign in to continue.</p>
+            <div>
+                <a href="/login" class="btn btn-custom">Login</a>
+                <a href="/register" class="btn btn-custom">Sign Up</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
