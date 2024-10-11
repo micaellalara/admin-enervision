@@ -185,10 +185,10 @@ router.post('/flagPost/:postId', authenticateToken, async (req, res) => {
             return res.status(404).send('Post not found');
         }
 
-        post.flagged = true;
+        post.flagged = true; // You can also add other properties or logic as needed
         await post.save();
         
-        res.redirect('/userposts');
+        res.redirect('/userposts'); // Redirect back to userposts
     } catch (error) {
         console.error('Error flagging post:', error);
         res.status(500).send('Server error');
@@ -205,15 +205,17 @@ router.post('/deletePost/:postId', authenticateToken, async (req, res) => {
         }
 
         await Post.findByIdAndDelete(postId);
-        res.redirect('/userposts');
+        res.redirect('/userposts'); // Redirect back to userposts
     } catch (error) {
         console.error('Error deleting post:', error);
         res.status(500).send('Server error');
     }
 });
 
+
+
 router.get('/profile', authenticateToken, async (req, res) => {
-    try {
+   try {
         const admin = await Admin.findById(req.admin.id).select('-password');
         if (!admin) {
             return res.status(404).send('Admin not found');
@@ -255,11 +257,138 @@ router.get('/user-profiles', authenticateToken, async (req, res) => {
         }
 
         const searchTerm = req.query.username || '';
-        const users = await User.find({ username: { $regex: searchTerm, $options: 'i' } });
-        
-        res.render('user-profiles', { admin, users, searchTerm });
+        const currentPage = parseInt(req.query.page) || 1;
+        const usersPerPage = 5;
+
+        // Find users and their associated profiles
+        const users = await User.find({
+            username: { $regex: searchTerm, $options: 'i' }
+        }).skip((currentPage - 1) * usersPerPage).limit(usersPerPage);
+
+        const totalCount = await User.countDocuments({
+            username: { $regex: searchTerm, $options: 'i' }
+        });
+        const totalPages = Math.ceil(totalCount / usersPerPage);
+
+        const userIds = users.map(user => user._id);
+        const userProfiles = await UserProfile.find({ userId: { $in: userIds } });
+
+        const postsByUser = await Post.aggregate([
+            { $match: { userId: { $in: userIds } } },
+            { $group: { _id: "$userId", postCount: { $sum: 1 } } }
+        ]);
+
+        // Combine user, username, and profile details
+        const usersWithDetails = users.map(user => {
+            const profile = userProfiles.find(p => p.userId.equals(user._id));
+            const userPosts = postsByUser.find(post => post._id.equals(user._id));
+
+            return {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                status: user.status,
+                name: profile ? profile.name : 'Not specified',
+                occupation: profile ? profile.occupation : 'Not specified',
+                postCount: userPosts ? userPosts.postCount : 0
+            };
+        });
+
+        // Calculate start and end indices for the displayed users
+        const startIndex = (currentPage - 1) * usersPerPage + 1; // Start from 1
+        const endIndex = Math.min(startIndex + users.length - 1, totalCount); // Ensure it does not exceed total count
+
+        // Render the userProfiles EJS file with the fetched data
+        res.render('userProfiles', {
+            admin,
+            users: usersWithDetails,
+            searchTerm,
+            totalCount,
+            currentPage,
+            totalPages,
+            startIndex,
+            endIndex
+        });
     } catch (error) {
         console.error('Error fetching user profiles:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+router.get('/user/:id', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).populate('appliances'); // Populate the appliances field
+
+        const profile = await UserProfile.findOne({ userId: user._id });
+        const userPosts = await Post.aggregate([
+            { $match: { userId: user._id } },
+            { $group: { _id: "$userId", postCount: { $sum: 1 } } }
+        ]);
+
+        // Count the number of appliances
+        const applianceCount = user.appliances.length;
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+            status: user.status,
+            kwhRate: user.kwhRate,
+            name: profile ? profile.name : 'Not specified',
+            mobileNumber: profile ? profile.mobileNumber : 'Not specified',
+            occupation: profile ? profile.occupation : 'Not specified',
+            address: profile ? profile.address : 'Not specified',
+            banDate: profile ? profile.banDate : null, // Correctly fetch banDate from profile
+            postCount: userPosts.length > 0 ? userPosts[0].postCount : 0,
+            applianceCount // Send the appliance count
+        });
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Route to edit a user's profile
+router.get('/profile/edit/:id', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        const profile = await UserProfile.findOne({ userId: user._id });
+
+        if (!user || !profile) {
+            return res.status(404).send('User not found');
+        }
+
+        res.render('editProfile', { user, profile }); // Render edit profile page
+    } catch (error) {
+        console.error('Error fetching user for edit:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route to deactivate a user's profile
+router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.id, { status: 'deactivated' }); // Update user status
+        res.redirect('/user-profiles'); // Redirect back to user profiles
+    } catch (error) {
+        console.error('Error deactivating user:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Route to delete a user's profile
+router.post('/profile/delete/:id', authenticateToken, async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id); // Delete user by ID
+        res.redirect('/user-profiles'); // Redirect back to user profiles
+    } catch (error) {
+        console.error('Error deleting user:', error);
         res.status(500).send('Server error');
     }
 });

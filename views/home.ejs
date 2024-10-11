@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,8 +11,8 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #A8D5BA, #D7E8F7);
+            font-family: 'Montserrat';
+            background: linear-gradient(135deg, #C3E0D2, #F0E8D9);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,67 +23,103 @@
         .split-container {
             display: flex;
             flex-direction: row;
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background-color: #F5F5F2;
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
             overflow: hidden;
-            max-width: 900px;
-            width: 100%;
+            max-width: 1000px;
+            width: 90%;
         }
 
-        /* Left side (Image or illustration) */
+        /* Left Panel with Image */
         .left-panel {
-            background: linear-gradient(135deg, #A8D5BA, #2C5F2D);
+            background: linear-gradient(160deg, #A7C5BD, #E5E8B6);
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 40px;
+            position: relative;
         }
 
         .left-panel img {
-            max-width: 100%;
-            border-radius: 10px;
+            max-width: 80%;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Right side (Text and buttons) */
+        /* Right Panel with Text and Buttons */
         .right-panel {
-            flex: 2;
-            background-color: #F5F5DC;
-            padding: 50px;
+            flex: 1.5;
+            background-color: #F0E8D9;
+            padding: 60px;
             display: flex;
             flex-direction: column;
-            justify-content: left;
+            justify-content: center;
             align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
         .right-panel h1 {
-            font-size: 36px;
-            color: #2C5F2D;
+            font-size: 38px;
+            color: #3D5A40;
             margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .right-panel p {
-            font-size: 16px;
-            color: #8C644A;
-            margin-bottom: 30px;
-            text-align: left;
+            font-size: 18px;
+            color: #6A706E;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 85%;
+        }
+
+        /* Decorative Artsy Elements */
+        .right-panel::before,
+        .right-panel::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.5;
+            background-color: #E5E8B6;
+        }
+
+        .right-panel::before {
+            width: 300px;
+            height: 300px;
+            top: -50px;
+            left: -100px;
+            background: radial-gradient(circle at 50% 50%, #C3E0D2, #A7C5BD);
+        }
+
+        .right-panel::after {
+            width: 200px;
+            height: 200px;
+            bottom: -70px;
+            right: -50px;
+            background: radial-gradient(circle at 50% 50%, #A7C5BD, #E5E8B6);
         }
 
         /* Buttons */
         .btn-custom {
-            background-color: #2C5F2D;
+            background-color: #3D5A40; /* Calm earthy green */
             color: white;
             padding: 12px 40px;
             font-size: 18px;
             border-radius: 30px;
             margin: 10px;
             border: none;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
+        /* Hover effect for buttons */
         .btn-custom:hover {
-            background-color: #1E3920;
+            background-color: #81B29A; /* Lighter green for hover */
+            color: #F4F1DE; /* Slightly off-white text on hover */
+            box-shadow: 0 8px 20px rgba(129, 178, 154, 0.6);
         }
 
         /* Responsive Design */
@@ -103,17 +140,18 @@
         }
     </style>
 </head>
+
 <body>
     <div class="split-container">
-        <!-- Left Panel with Image or Visual -->
+        <!-- Left Panel with Image -->
         <div class="left-panel">
             <img src="/images/enervision.png" alt="EnerVision Logo">
         </div>
 
         <!-- Right Panel with Welcome Message and Buttons -->
         <div class="right-panel">
-            <h1 style="font-size: 40px;">Welcome to EnerVision Dashboard!</h1>
-            <p>Hello! Let's get started. Please sign in to continue.</p>
+            <h1>Welcome to EnerVision Dashboard!</h1>
+            <p>Begin your journey with us to a greener, smarter energy future.</p>
             <div>
                 <a href="/login" class="btn btn-custom">Login</a>
                 <a href="/register" class="btn btn-custom">Sign Up</a>
@@ -124,4 +162,5 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
