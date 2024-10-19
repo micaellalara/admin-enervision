@@ -82,7 +82,6 @@ router.get('/api/average-appliances', async (req, res) => {
     }
 
     try {
-        // Calculate average appliances per day within the specified date range
         const applianceData = await User.aggregate([
             {
                 $match: {
@@ -121,12 +120,10 @@ router.get('/api/average-appliances', async (req, res) => {
 
         const totalAppliancesInDateRange = applianceData.reduce((acc, entry) => acc + entry.totalAppliances, 0);
 
-        // Get today's date range
         const today = new Date();
         const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         const endOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-        // Calculate appliances added today
         const appliancesAddedTodayData = await User.aggregate([
             {
                 $match: {
@@ -148,7 +145,6 @@ router.get('/api/average-appliances', async (req, res) => {
 
         const appliancesAddedTodayCount = appliancesAddedTodayData[0]?.total || 0;
 
-        // Calculate total appliances stored for all users
         const totalAppliancesData = await User.aggregate([
             {
                 $project: {
@@ -165,12 +161,12 @@ router.get('/api/average-appliances', async (req, res) => {
 
         const totalAppliances = totalAppliancesData[0]?.total || 0;
 
-        res.json({ 
-            applianceDays: applianceData.map(entry => entry.date), 
+        res.json({
+            applianceDays: applianceData.map(entry => entry.date),
             averageApplianceCounts: applianceData.map(entry => entry.averageAppliances),
             totalAppliances: totalAppliancesInDateRange,
             appliancesTodayCount: appliancesAddedTodayCount,
-            totalAppliancesStored: totalAppliances // Include total appliances stored for all users
+            totalAppliancesStored: totalAppliances
         });
     } catch (error) {
         console.error("Error fetching average appliances data:", error);
@@ -205,7 +201,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
                 createdAt: user.createdAt,
                 occupation: profile ? profile.occupation : 'Not specified',
                 postCount: userPosts ? userPosts.postCount : 0,
-                applianceCount: user.appliances.length // Count of appliances for each user
+                applianceCount: user.appliances.length
             };
         });
 
@@ -217,7 +213,6 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         const totalUsers = await User.countDocuments();
         const postsAddedToday = await Post.countDocuments({ createdAt: { $gte: startOfToday, $lt: endOfToday } });
 
-        // Get total appliances for all users (not just today's)
         const totalAppliancesData = await User.aggregate([
             {
                 $project: {
@@ -256,11 +251,11 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         const appliancesAddedTodayCount = appliancesAddedTodayData[0]?.total || 0;
 
         const monthlyRegisteredUsers = await User.aggregate([
-            { 
-                $group: { 
-                    _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, 
-                    count: { $sum: 1 } 
-                } 
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+                    count: { $sum: 1 }
+                }
             },
             { $sort: { _id: 1 } }
         ]);
@@ -269,24 +264,24 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
         const userCounts = monthlyRegisteredUsers.map(entry => entry.count);
 
         const applianceCountsPerDay = await User.aggregate([
-            { 
-                $project: { 
-                    day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
-                    appliances: { $size: "$appliances" } 
-                } 
+            {
+                $project: {
+                    day: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    appliances: { $size: "$appliances" }
+                }
             },
-            { 
-                $group: { 
-                    _id: "$day", 
-                    totalAppliances: { $sum: "$appliances" }, 
-                    userCount: { $sum: 1 } 
-                } 
+            {
+                $group: {
+                    _id: "$day",
+                    totalAppliances: { $sum: "$appliances" },
+                    userCount: { $sum: 1 }
+                }
             },
-            { 
-                $project: { 
-                    date: "$_id", 
-                    averageAppliances: { $divide: ["$totalAppliances", "$userCount"] } 
-                } 
+            {
+                $project: {
+                    date: "$_id",
+                    averageAppliances: { $divide: ["$totalAppliances", "$userCount"] }
+                }
             },
             { $sort: { date: 1 } }
         ]);
@@ -300,8 +295,8 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             usersRegisteredToday,
             totalUsers,
             postsAddedToday,
-            totalAppliances, // This is now the total number of appliances for all users
-            appliancesAddedToday: appliancesAddedTodayCount, // This is only today's appliances
+            totalAppliances,
+            appliancesAddedToday: appliancesAddedTodayCount,
             months,
             userCounts,
             applianceDays,
@@ -324,7 +319,7 @@ router.get('/userposts', authenticateToken, async (req, res) => {
         const users = await User.find({ username: { $regex: searchTerm, $options: 'i' } });
         const userIds = users.map(user => user._id);
 
-        const postsByUsers = await Post.find({ userId: { $in: userIds } }).populate('userId', 'username uploadPhoto');
+        const postsByUsers = await Post.find({ userId: { $in: userIds }, deletedAt: null }).populate('userId', 'username uploadPhoto');
 
         const usersWithPosts = users.map(user => {
             const userPosts = postsByUsers.filter(post => post.userId.equals(user._id));
@@ -347,46 +342,135 @@ router.get('/userposts', authenticateToken, async (req, res) => {
     }
 });
 
+
 router.post('/flagPost/:postId', authenticateToken, async (req, res) => {
     try {
         const postId = req.params.postId;
         const post = await Post.findById(postId);
-        
+
         if (!post) {
-            return res.status(404).send('Post not found');
+            return res.status(404).json({ error: 'Post not found' });
         }
 
-        post.flagged = true; // You can also add other properties or logic as needed
+        post.flagged = true;
         await post.save();
-        
-        res.redirect('/userposts'); // Redirect back to userposts
+
+        res.json({ success: true, postId: postId });
     } catch (error) {
         console.error('Error flagging post:', error);
-        res.status(500).send('Server error');
+        res.status(500).json({ error: 'Server error' });
     }
 });
+
+
 
 router.post('/deletePost/:postId', authenticateToken, async (req, res) => {
     try {
         const postId = req.params.postId;
         const post = await Post.findById(postId);
-        
+
         if (!post) {
-            return res.status(404).send('Post not found');
+            return res.status(404).json({ error: 'Post not found' });
         }
 
-        await Post.findByIdAndDelete(postId);
-        res.redirect('/userposts'); // Redirect back to userposts
+        post.deletedAt = new Date();
+        
+
+        await post.save();
+        res.json({ success: true, postId: postId });
     } catch (error) {
         console.error('Error deleting post:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+
+router.get('/flaggedPosts', authenticateToken, async (req, res) => {
+    try {
+
+        const flaggedPosts = await Post.find({ flagged: true }).populate('userId', 'username uploadPhoto');
+        const admin = await Admin.findById(req.admin.id);
+
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        res.render('flaggedPosts', {
+            flaggedPosts: flaggedPosts,
+            admin: admin
+        });
+    } catch (error) {
+        console.error('Error fetching flagged posts:', error);
         res.status(500).send('Server error');
+    }
+});
+
+router.get('/deletedPosts', authenticateToken, async (req, res) => {
+    try {
+        const deletedPosts = await Post.find({ deletedAt: { $ne: null } })
+            .populate('userId', 'username uploadPhoto');
+
+        const admin = req.admin;
+
+        res.render('deletedPosts', { deletedPosts, admin });
+    } catch (error) {
+        console.error('Error fetching deleted posts:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.post('/restorePost/:postId', authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        if (!post.deletedAt) {
+            return res.status(400).json({ error: 'Post is not deleted' });
+        }
+
+        post.deletedAt = null;
+        await post.save();
+
+        // Send a success response
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error restoring post:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.post('/unflagPost/:postId', authenticateToken, async (req, res) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        if (!post.flagged) {
+            return res.status(400).json({ error: 'Post is not flagged' });
+        }
+
+        post.flagged = false;
+        await post.save();
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error unflagging post:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
 
 
 router.get('/profile', authenticateToken, async (req, res) => {
-   try {
+    try {
         const admin = await Admin.findById(req.admin.id).select('-password');
         if (!admin) {
             return res.status(404).send('Admin not found');
@@ -449,7 +533,6 @@ router.get('/user-profiles', authenticateToken, async (req, res) => {
             { $group: { _id: "$userId", postCount: { $sum: 1 } } }
         ]);
 
-        // Combine user, username, and profile details
         const usersWithDetails = users.map(user => {
             const profile = userProfiles.find(p => p.userId.equals(user._id));
             const userPosts = postsByUser.find(post => post._id.equals(user._id));
@@ -466,11 +549,9 @@ router.get('/user-profiles', authenticateToken, async (req, res) => {
             };
         });
 
-        // Calculate start and end indices for the displayed users
-        const startIndex = (currentPage - 1) * usersPerPage + 1; // Start from 1
-        const endIndex = Math.min(startIndex + users.length - 1, totalCount); // Ensure it does not exceed total count
+        const startIndex = (currentPage - 1) * usersPerPage + 1;
+        const endIndex = Math.min(startIndex + users.length - 1, totalCount);
 
-        // Render the userProfiles EJS file with the fetched data
         res.render('userProfiles', {
             admin,
             users: usersWithDetails,
@@ -490,7 +571,7 @@ router.get('/user-profiles', authenticateToken, async (req, res) => {
 
 router.get('/user/:id', authenticateToken, async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).populate('appliances'); // Populate the appliances field
+        const user = await User.findById(req.params.id).populate('appliances');
 
         const profile = await UserProfile.findOne({ userId: user._id });
         const userPosts = await Post.aggregate([
@@ -498,7 +579,6 @@ router.get('/user/:id', authenticateToken, async (req, res) => {
             { $group: { _id: "$userId", postCount: { $sum: 1 } } }
         ]);
 
-        // Count the number of appliances
         const applianceCount = user.appliances.length;
 
         if (!user) {
@@ -515,9 +595,9 @@ router.get('/user/:id', authenticateToken, async (req, res) => {
             mobileNumber: profile ? profile.mobileNumber : 'Not specified',
             occupation: profile ? profile.occupation : 'Not specified',
             address: profile ? profile.address : 'Not specified',
-            banDate: profile ? profile.banDate : null, // Correctly fetch banDate from profile
+            banDate: profile ? profile.banDate : null,
             postCount: userPosts.length > 0 ? userPosts[0].postCount : 0,
-            applianceCount // Send the appliance count
+            applianceCount
         });
     } catch (error) {
         console.error('Error fetching user details:', error);
@@ -525,7 +605,6 @@ router.get('/user/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// Route to edit a user's profile
 router.get('/profile/edit/:id', authenticateToken, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -535,34 +614,80 @@ router.get('/profile/edit/:id', authenticateToken, async (req, res) => {
             return res.status(404).send('User not found');
         }
 
-        res.render('editProfile', { user, profile }); // Render edit profile page
+        res.render('editProfile', { user, profile });
     } catch (error) {
         console.error('Error fetching user for edit:', error);
         res.status(500).send('Server error');
     }
 });
 
-// Route to deactivate a user's profile
-router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {
+router.post('/deleteUser/:id', authenticateToken, async (req, res) => {
     try {
-        await User.findByIdAndUpdate(req.params.id, { status: 'deactivated' }); // Update user status
-        res.redirect('/user-profiles'); // Redirect back to user profiles
+        const userId = req.params.id;
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Delete user
+        await User.findByIdAndDelete(userId);
+
+        // Redirect to the user-profiles page after deletion
+        res.redirect('/userProfiles');
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+router.post('/deactivateUser/:id', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Update the user's status to 'inactive'
+        user.status = 'inactive';
+        await user.save();
+
+        // Redirect to the user-profiles page after deactivation
+        res.redirect('/userProfiles');
     } catch (error) {
         console.error('Error deactivating user:', error);
         res.status(500).send('Server error');
     }
 });
 
-// Route to delete a user's profile
-router.post('/profile/delete/:id', authenticateToken, async (req, res) => {
-    try {
-        await User.findByIdAndDelete(req.params.id); // Delete user by ID
-        res.redirect('/user-profiles'); // Redirect back to user profiles
-    } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).send('Server error');
-    }
-});
+
+// router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {
+//     try {
+//         await User.findByIdAndUpdate(req.params.id, { status: 'deactivated' });
+//         const profile = await UserProfile.findOne({ userId: user._id });
+
+//         res.redirect('/user-profiles'); 
+//     } catch (error) {
+//         console.error('Error deactivating user:', error);
+//         res.status(500).send('Server error');
+//     }
+// });
+
+// router.post('/profile/delete/:id', authenticateToken, async (req, res) => {
+//     try {
+//         await User.findByIdAndDelete(req.params.id); 
+//         const profile = await UserProfile.findOne({ userId: user._id });
+
+//         res.redirect('/user-profiles');
+//     } catch (error) {
+//         console.error('Error deleting user:', error);
+//         res.status(500).send('Server error');
+//     }
+// });
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token');

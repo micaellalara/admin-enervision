@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-// Define the UserProfile schema
 const userProfileSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
@@ -28,7 +27,6 @@ const userProfileSchema = new Schema({
   deletedAt: { type: Date, default: null },
 }, { timestamps: true });
 
-// Method to calculate the age of the user based on their birthDate
 userProfileSchema.methods.getAge = function() {
   const today = new Date();
   const birthDate = new Date(this.birthDate);
@@ -40,6 +38,5 @@ userProfileSchema.methods.getAge = function() {
   return age;
 };
 
-// Create the UserProfile model
 const UserProfile = mongoose.model('UserProfile', userProfileSchema);
 module.exports = UserProfile;

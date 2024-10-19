@@ -18,9 +18,9 @@ const postSchema = new Schema({
     required: true
   },
   suggestions: [{ type: Schema.Types.ObjectId, ref: 'Suggestion' }],
-  flagged: { // New field to indicate if a post is flagged
+  flagged: {
     type: Boolean,
-    default: false // Default to false
+    default: false
   }
 }, { timestamps: true });
 

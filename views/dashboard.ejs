@@ -31,42 +31,43 @@
     width: 50%;
     display: block;
     margin: auto;
-}
+  }
 
-.btn-primary-1:hover {
+  .btn-primary-1:hover {
     background-color: #009883;
-}
-.date-picker-row {
+  }
+
+  .date-picker-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 20px;
-}
+  }
 
-.form-group {
+  .form-group {
     flex: 1;
-}
+  }
 
-label {
+  label {
     font-weight: bold;
     margin-bottom: 8px;
     display: block;
     color: #333;
-}
+  }
 
-input[type="date"] {
+  input[type="date"] {
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     transition: border-color 0.3s;
-}
+  }
 
-input[type="date"]:focus {
+  input[type="date"]:focus {
     border-color: #007bff;
     outline: none;
-}
-
+  }
 </style>
+
 <body>
   <div class="container-scroller">
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -401,80 +402,55 @@ input[type="date"]:focus {
             <div class="collapse" id="user-posts">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
-                  <a class="nav-link" href="/userposts">Posts</a>
+                  <a class="nav-link" href="/userposts">All Posts</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="">Reported Posts</a>
                 </li>
               </ul>
             </div>
           </li>
+          
 
 
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
               <i class="icon-bar-graph menu-icon"></i>
-              <span class="menu-title">Charts</span>
+              <span class="menu-title">kWh Rate</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="charts">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/charts/chartjs.html">ChartJs</a></li>
+                <li class="nav-item"> <a class="nav-link" href="">Providers</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
               <i class="icon-grid-2 menu-icon"></i>
-              <span class="menu-title">Tables</span>
+              <span class="menu-title">Suggestions</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="tables">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/tables/basic-table.html">Basic table</a></li>
+                <li class="nav-item"> <a class="nav-link" href="">Posts Suggestions</a></li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
               <i class="icon-contract menu-icon"></i>
-              <span class="menu-title">Icons</span>
+              <span class="menu-title">Post Status</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="icons">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/icons/mdi.html">Mdi icons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/deletedPosts">Deleted Posts</a></li>
               </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-              <i class="icon-head menu-icon"></i>
-              <span class="menu-title">User Pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="auth">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
+                <li class="nav-item"> <a class="nav-link" href="/flaggedPosts">Flagged Posts</a></li>
               </ul>
             </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#error" aria-expanded="false" aria-controls="error">
-              <i class="icon-ban menu-icon"></i>
-              <span class="menu-title">Error pages</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="error">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="pages/documentation/documentation.html">
-              <i class="icon-paper menu-icon"></i>
-              <span class="menu-title">Documentation</span>
-            </a>
           </li>
         </ul>
       </nav>
@@ -493,7 +469,8 @@ input[type="date"]:focus {
                           <p>Access denied. Please <a href="/login">login</a> to view this page.</p>
                           <% } %>
                   </h3>
-                  <h6 class="font-weight-normal mb-0">Everything is operating efficiently! You currently have <span class="text-primary">3 new notifications!</span></h6>
+                  <h6 class="font-weight-normal mb-0">Everything is operating efficiently! You currently have <span
+                      class="text-primary">3 new notifications!</span></h6>
                 </div>
                 <div class="col-12 col-xl-4">
                   <div class="justify-content-end d-flex">
@@ -654,23 +631,23 @@ input[type="date"]:focus {
                   </div>
                   <div class="date-picker-row">
                     <div class="form-group">
-                        <label for="start-date">Start Date:</label>
-                        <input type="date" id="start-date" class="form-control date-picker" />
+                      <label for="start-date">Start Date:</label>
+                      <input type="date" id="start-date" class="form-control date-picker" />
                     </div>
                     <div class="form-group">
-                        <label for="end-date">End Date:</label>
-                        <input type="date" id="end-date" class="form-control date-picker" />
+                      <label for="end-date">End Date:</label>
+                      <input type="date" id="end-date" class="form-control date-picker" />
                     </div>
-                </div>
-                
-                <button id="filter-button" class="btn btn-primary-date">Filter</button>
+                  </div>
 
-                <div class="chart-container mt-4">
+                  <button id="filter-button" class="btn btn-primary-date">Filter</button>
+
+                  <div class="chart-container mt-4">
                     <canvas id="chart" style="height: 400px; width: 100%;"></canvas>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
-        </div>
             <div class="col-md-6 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -916,7 +893,7 @@ input[type="date"]:focus {
           </footer>
         </div>
       </div>
-      
+
       <script src="vendors/js/vendor.bundle.base.js"></script>
       <script src="vendors/chart.js/Chart.min.js"></script>
       <script src="vendors/datatables.net/jquery.dataTables.js"></script>
