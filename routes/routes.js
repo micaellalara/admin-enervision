@@ -10,6 +10,7 @@ const Admin = require('../model/admins');
 const User = require('../model/users');
 const UserProfile = require('../model/profile.model');
 const Appliance = require('../model/appliances.model');
+const FAQ = require('../model/faqs.model');
 
 router.get('/', (req, res) => {
     res.render('home');
@@ -625,7 +626,6 @@ router.post('/deleteUser/:id', authenticateToken, async (req, res) => {
     try {
         const userId = req.params.id;
 
-        // Check if user exists
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).send('User not found');
@@ -634,7 +634,6 @@ router.post('/deleteUser/:id', authenticateToken, async (req, res) => {
         // Delete user
         await User.findByIdAndDelete(userId);
 
-        // Redirect to the user-profiles page after deletion
         res.redirect('/userProfiles');
     } catch (error) {
         console.error('Error deleting user:', error);
@@ -646,23 +645,83 @@ router.post('/deactivateUser/:id', authenticateToken, async (req, res) => {
     try {
         const userId = req.params.id;
 
-        // Check if user exists
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).send('User not found');
         }
 
-        // Update the user's status to 'inactive'
         user.status = 'inactive';
         await user.save();
 
-        // Redirect to the user-profiles page after deactivation
         res.redirect('/userProfiles');
     } catch (error) {
         console.error('Error deactivating user:', error);
         res.status(500).send('Server error');
     }
 });
+
+router.get('/faqs', authenticateToken, async (req, res) => {
+    try {
+        const faqs = await FAQ.find();
+
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        res.render('faqs', { faqs, admin }); 
+    } catch (err) {
+        console.error('Error fetching FAQs:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+router.post('/faqs', authenticateToken, async (req, res) => {
+    const { question, answer } = req.body;
+    const newFAQ = new FAQ({ question, answer });
+
+    try {
+        const savedFAQ = await newFAQ.save();
+
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        res.status(201).redirect('/faqs');
+    } catch (err) {
+        console.error('Error saving FAQ:', err);
+        res.status(400).json({ message: 'Error saving FAQ' });
+    }
+});
+
+router.put('/faqs/:id', authenticateToken, async (req, res) => {
+    const { question, answer } = req.body;
+    try {
+        const updatedFAQ = await FAQ.findByIdAndUpdate(req.params.id, { question, answer }, { new: true });
+        if (!updatedFAQ) {
+            return res.status(404).send('FAQ not found');
+        }
+        res.redirect('/faqs');
+    } catch (err) {
+        console.error('Error updating FAQ:', err);
+        res.status(400).json({ message: 'Error updating FAQ' });
+    }
+});
+
+router.delete('/faqs/:id', authenticateToken, async (req, res) => {
+    try {
+        const deletedFAQ = await FAQ.findByIdAndDelete(req.params.id);
+        if (!deletedFAQ) {
+            return res.status(404).send('FAQ not found');
+        }
+        res.redirect('/faqs');
+    } catch (err) {
+        console.error('Error deleting FAQ:', err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 
 
 // router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {

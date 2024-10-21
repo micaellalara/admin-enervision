@@ -12,6 +12,10 @@ const PORT = process.env.PORT || 3000;
 
 const server = http.createServer(app);
 const io = new Server(server);
+const methodOverride = require('method-override');
+
+app.use(methodOverride('_method'));
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
