@@ -1,0 +1,263 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Chats</title>
+    <link rel="stylesheet" href="vendors/feather/feather.css">
+    <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+    <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
+    <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+    <link rel="shortcut icon" href="images/enervision.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-4">User Chats</h1>
+        <div id="userList" class="mt-4">
+            <h3>User List</h3>
+            <ul class="list-group" id="userListContainer"></ul>
+        </div>
+
+        <div id="chatContainer" class="mt-4" style="display:none;">
+            <h3>Chat with <span id="chatUser"></span></h3>
+            <div id="conversation" class="mb-4"></div>
+            <form id="replyForm" onsubmit="replyToChat(event)">
+                <input type="hidden" id="activeUser" value="">
+                <input type="text" placeholder="Reply" required class="form-control mb-2">
+                <button type="submit" class="btn btn-primary">Send Reply</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Fetch unique users and display in the user list
+        async function fetchUsers() {
+            const response = await fetch('/users');
+            const users = await response.json();
+            const userListContainer = document.getElementById('userListContainer');
+    
+            userListContainer.innerHTML = ''; // Clear previous user list
+            users.forEach(user => {
+                const userItem = document.createElement('li');
+                userItem.className = 'list-group-item';
+                userItem.onclick = () => fetchUserChats(user); // Fetch chats when user is clicked
+                userItem.textContent = `User (${user})`;
+                userListContainer.appendChild(userItem);
+            });
+        }
+    
+        async function fetchUserChats(userId) {
+            document.getElementById('chatUser').textContent = userId; // Display user ID
+            document.getElementById('activeUser').value = userId; // Store active user ID
+            const response = await fetch(`/chats/${userId}`); // Fetch chats for specific user
+    
+            // Check if the response is successful
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(errorData.message); // Alert if no chats are found
+                return;
+            }
+    
+            const chats = await response.json();
+            const conversation = document.getElementById('conversation');
+    
+            conversation.innerHTML = ''; // Clear previous chats
+            chats.forEach(chat => {
+                chat.messages.forEach(message => { // Loop through each message
+                    const chatDiv = document.createElement('div');
+                    chatDiv.innerHTML = `
+                        <p><strong>User:</strong> ${message.message}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(message.timestamp).toLocaleString()}</p>
+                        <hr>
+                    `;
+                    conversation.appendChild(chatDiv);
+                });
+    
+                // Optional: Display any admin reply
+                if (chat.adminReply) {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.innerHTML = `
+                        <p><strong>Admin Reply:</strong> ${chat.adminReply}</p>
+                        <hr>
+                    `;
+                    conversation.appendChild(replyDiv);
+                }
+            });
+    
+            document.getElementById('chatContainer').style.display = 'block'; // Show chat container
+        }
+    
+        async function replyToChat(event) {
+            event.preventDefault();
+            const userId = document.getElementById('activeUser').value; 
+            const reply = event.target.querySelector('input').value;
+            await fetch('/chats/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, reply }) 
+            });
+            event.target.reset();
+            fetchUserChats(userId); 
+        }
+    
+        // Initial fetch of users
+        fetchUsers(); 
+    </script>
+    
+</body>
+
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Chat Panel</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Optional: Link to your CSS -->
+<!-- </head>
+<body>
+    <div>
+        <h1>Admin Chat Panel</h1>
+        <ul>
+            <% chats.forEach(chat => { %>
+                <li>
+                    <h3>Chat Timestamp: <%= new Date(chat.timestamp).toLocaleString() %></h3>
+                    <ul>
+                        <% chat.messages.forEach(message => { %>
+                            <li>
+                                <strong>User ID:</strong> <%= message.userId %> <br />
+                                <strong>Message:</strong> <%= message.message %> <br />
+                                <strong>Time:</strong> <%= new Date(message.timestamp).toLocaleString() %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                    <% if (chat.adminReply) { %>
+                        <div><strong>Admin Reply:</strong> <%= chat.adminReply %></div>
+                    <% } %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</body>
+</html> --> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Chat Panel</title>
+    <link rel="stylesheet" href="/styles.css"> <!-- Optional: Link to your CSS -->
+</head>
+<body>
+    <div>
+        <h1>Admin Chat Panel</h1>
+        <ul>
+            <% chats.forEach(chat => { %>
+                <li>
+                    <h3>Chat Timestamp: <%= new Date(chat.timestamp).toLocaleString() %></h3>
+                    <ul>
+                        <% chat.messages.forEach(message => { %>
+                            <li>
+                                <strong>User ID:</strong> <%= message.userId %> <br />
+                                <strong>Message:</strong> <%= message.message %> <br />
+                                <strong>Time:</strong> <%= new Date(message.timestamp).toLocaleString() %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                    <% if (chat.adminReply) { %>
+                        <div><strong>Admin Reply:</strong> <%= chat.adminReply %></div>
+                    <% } %>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</body>
+</html>
+
+
+
+
+// router.get('/users', async (req, res) => {
+//     try {
+//         const users = await Chat.distinct('user');
+//         res.json(users);
+//     } catch (error) {
+//         res.status(500).json({ error: 'Error fetching users' });
+//     }
+// });
+
+// router.get('/chats', async (req, res) => {
+//     try {
+//         const chats = await Chat.find().sort({ createdAt: -1 });
+//         const users = await Chat.distinct('user');
+//         return res.render('adminChats', { chats, users });
+//     } catch (error) {
+//         console.error('Error fetching chats:', error);
+//         return res.status(500).json({ error: 'Error fetching chats' });
+//     }
+// });
+
+// router.get('/chats/:userId', async (req, res) => {
+//     try {
+//         const chats = await Chat.find({ 'messages.userId': req.params.userId });
+
+//         // If no chats found for the user, return an empty array
+//         if (!chats || chats.length === 0) {
+//             return res.status(404).json({ message: 'No chats found for this user' });
+//         }
+
+//         res.json(chats);
+//     } catch (error) {
+//         res.status(500).json({ error: 'Error fetching user chats' });
+//     }
+// });
+
+// router.post('/chats/reply', async (req, res) => {
+//     const { userId, reply } = req.body;
+//     try {
+//         const chat = await Chat.findOneAndUpdate(
+//             { user: userId },
+//             { adminReply: reply },
+//             { new: true }
+//         );
+//         res.status(200).json(chat);
+//     } catch (error) {
+//         console.error('Error replying to chat:', error);
+//         res.status(500).json({ error: 'Error replying to chat' });
+//     }
+// });
+
+
+
+// router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {
+//     try {
+//         await User.findByIdAndUpdate(req.params.id, { status: 'deactivated' });
+//         const profile = await UserProfile.findOne({ userId: user._id });
+
+//         res.redirect('/user-profiles'); 
+//     } catch (error) {
+//         console.error('Error deactivating user:', error);
+//         res.status(500).send('Server error');
+//     }
+// });
+
+// router.post('/profile/delete/:id', authenticateToken, async (req, res) => {
+//     try {
+//         await User.findByIdAndDelete(req.params.id); 
+//         const profile = await UserProfile.findOne({ userId: user._id });
+
+//         res.redirect('/user-profiles');
+//     } catch (error) {
+//         console.error('Error deleting user:', error);
+//         res.status(500).send('Server error');
+//     }
+// });

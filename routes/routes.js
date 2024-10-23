@@ -11,6 +11,7 @@ const User = require('../model/users');
 const UserProfile = require('../model/profile.model');
 const Appliance = require('../model/appliances.model');
 const FAQ = require('../model/faqs.model');
+const Chat = require('../model/chats.model');
 
 router.get('/', (req, res) => {
     res.render('home');
@@ -724,29 +725,79 @@ router.delete('/faqs/:id', authenticateToken, async (req, res) => {
 
 
 
-// router.post('/profile/deactivate/:id', authenticateToken, async (req, res) => {
-//     try {
-//         await User.findByIdAndUpdate(req.params.id, { status: 'deactivated' });
-//         const profile = await UserProfile.findOne({ userId: user._id });
+router.get('/chats', authenticateToken, async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.admin.id);  // Get admin details
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
 
-//         res.redirect('/user-profiles'); 
-//     } catch (error) {
-//         console.error('Error deactivating user:', error);
-//         res.status(500).send('Server error');
-//     }
-// });
+        const chats = await Chat.find({});
 
-// router.post('/profile/delete/:id', authenticateToken, async (req, res) => {
-//     try {
-//         await User.findByIdAndDelete(req.params.id); 
-//         const profile = await UserProfile.findOne({ userId: user._id });
+        res.render('adminChats', { chats, admin });  
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
-//         res.redirect('/user-profiles');
-//     } catch (error) {
-//         console.error('Error deleting user:', error);
-//         res.status(500).send('Server error');
-//     }
-// });
+router.get('/chats/:userId', authenticateToken, async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const chat = await Chat.findOne({ 'messages.userId': userId }).populate('messages.userId', 'name'); 
+
+        if (!chat) {
+            return res.status(404).json({ error: 'Chat not found' });
+        }
+
+        res.status(200).json({
+            messages: chat.messages,
+            adminReplies: chat.adminReplies
+        });
+    } catch (error) {
+        console.error('Error fetching chat:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
+    const userId = req.params.userId;
+    const { message } = req.body;
+
+    if (!message || !message.trim()) {
+        return res.status(400).json({ error: 'Message content is required' });
+    }
+
+    try {
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) {
+            return res.status(404).json({ error: 'Admin not found' });
+        }
+
+        const chat = await Chat.findOne({ 'messages.userId': userId });
+        if (!chat) {
+            return res.status(404).json({ error: 'Chat not found' });
+        }
+
+        const adminReply = {
+            userId: admin._id.toString(), 
+            sender: 'admin', 
+            message: message, 
+            timestamp: new Date()
+        };
+
+        chat.adminReplies.push(adminReply); 
+
+        await chat.save();
+
+        res.status(200).json({ message: 'Reply sent successfully' });
+    } catch (error) {
+        console.error('Error sending admin reply:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token');
