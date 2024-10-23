@@ -744,21 +744,38 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const chat = await Chat.findOne({ 'messages.userId': userId }).populate('messages.userId', 'name'); 
+        const chat = await Chat.findOne({ 'messages.userId': userId });
 
         if (!chat) {
             return res.status(404).json({ error: 'Chat not found' });
         }
 
+        const allMessages = [
+            ...chat.messages.map(msg => ({
+                userId: msg.userId,
+                sender: msg.sender,
+                message: msg.message,
+                timestamp: msg.timestamp,
+            })),
+            ...chat.adminReplies.map(reply => ({
+                userId: 'admin',
+                sender: reply.sender,
+                message: reply.message,
+                timestamp: reply.timestamp,
+            })),
+        ];
+
+        allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
         res.status(200).json({
-            messages: chat.messages,
-            adminReplies: chat.adminReplies
+            messages: allMessages
         });
     } catch (error) {
         console.error('Error fetching chat:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {

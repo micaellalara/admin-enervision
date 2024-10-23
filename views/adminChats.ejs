@@ -436,35 +436,25 @@
 
                     function loadChat(userId) {
                         $.get(`/chats/${userId}`, function (data) {
-                            $('#messages-list').html(''); 
+                            $('#messages-list').html('');
 
                             if (data.messages && data.messages.length > 0) {
+                                // Sorting the messages in chronological order
+                                data.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
                                 data.messages.forEach(function (message) {
                                     let messageClass = message.sender === 'admin' ? 'admin-message' : 'user-message';
                                     $('#messages-list').append(`
-                    <div class="message-bubble mt-2 ${messageClass}">
-                        <div class="message-text">
-                            ${message.message}
-                        </div>
-                        <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
-                    </div>
-                `);
+                                        <div class="message-bubble mt-2 ${messageClass}">
+                                            <div class="message-text">
+                                                ${message.message}
+                                            </div>
+                                            <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
+                                        </div>
+                                    `);
                                 });
                             } else {
                                 $('#messages-list').append('<p>No messages found for this user.</p>');
-                            }
-
-                            if (data.adminReplies && Array.isArray(data.adminReplies)) {
-                                data.adminReplies.forEach(function (reply) {
-                                    $('#messages-list').append(`
-                    <div class="message-bubble mt-2 admin-message">
-                        <div class="message-text">
-                            ${reply.message}
-                        </div>
-                        <small class="message-time">${new Date(reply.timestamp).toLocaleString()}</small>
-                    </div>
-                `);
-                                });
                             }
 
                             $('#messages-list').scrollTop($('#messages-list')[0].scrollHeight);
@@ -473,7 +463,6 @@
                             alert('Error fetching chat messages. Please check the console for more details.');
                         });
                     }
-
 
                     $('#send-button').on('click', function () {
                         const message = $('#message-input').val().trim();
@@ -513,7 +502,10 @@
                 .message-bubble {
                     padding: 10px;
                     border-radius: 10px;
-                    max-width: 80%;
+                    max-width: 50%;
+                    margin: 5px;
+                    position: relative;
+                    word-wrap: break-word;
                 }
 
                 .admin-message {
@@ -525,12 +517,13 @@
                 .user-message {
                     background-color: #f1f1f1;
                     color: black;
+                    align-self: flex-start;
                 }
 
                 .message-time {
                     display: block;
                     font-size: 0.8em;
-                    color: gray;
+                    color: black;
                     margin-top: 5px;
                 }
 
