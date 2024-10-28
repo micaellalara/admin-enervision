@@ -28,19 +28,6 @@
                 <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
                     <span class="icon-menu"></span>
                 </button>
-                <ul class="navbar-nav mr-lg-2">
-                    <li class="nav-item nav-search d-none d-lg-block">
-                        <div class="input-group">
-                            <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
-                                <span class="input-group-text" id="search">
-                                    <i class="icon-search"></i>
-                                </span>
-                            </div>
-                            <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now"
-                                aria-label="search" aria-describedby="search">
-                        </div>
-                    </li>
-                </ul>
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item dropdown">
                         <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
@@ -98,10 +85,6 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
                             aria-labelledby="profileDropdown">
-                            <a class="dropdown-item">
-                                <i class="ti-settings text-primary"></i>
-                                Settings
-                            </a>
                             <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                                 <i class="ti-power-off text-primary"></i>
                                 Logout
@@ -235,31 +218,9 @@
                                 </li>
                             </ul>
                         </div>
-                        <h4 class="px-3 text-muted mt-5 font-weight-light mb-0">Events</h4>
-                        <div class="events pt-4 px-3">
-                            <div class="wrapper d-flex mb-2">
-                                <i class="ti-control-record text-primary mr-2"></i>
-                                <span>Feb 11 2018</span>
-                            </div>
-                            <p class="mb-0 font-weight-thin text-gray">Creating component page build a js</p>
-                            <p class="text-gray mb-0">The total number of sessions</p>
-                        </div>
-                        <div class="events pt-4 px-3">
-                            <div class="wrapper d-flex mb-2">
-                                <i class="ti-control-record text-primary mr-2"></i>
-                                <span>Feb 7 2018</span>
-                            </div>
-                            <p class="mb-0 font-weight-thin text-gray">Meeting with Alisa</p>
-                            <p class="text-gray mb-0 ">Call Sarah Graves</p>
-                        </div>
                     </div>
-                    <!-- To do section tab ends -->
-
-                    <!-- chat tab ends -->
                 </div>
             </div>
-            <!-- partial -->
-            <!-- partial:partials/_sidebar.html -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
@@ -362,6 +323,21 @@
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item">
                                     <a class="nav-link" href="/faqs">QAs</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#chats" aria-expanded="false"
+                            aria-controls="chats">
+                            <i class="icon-contract menu-icon"></i>
+                            <span class="menu-title">Intercom Chats</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="chats">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/chats">Chats</a>
                                 </li>
                             </ul>
                         </div>
@@ -472,14 +448,12 @@
                                                             <p>Are you sure you want to proceed with this action?</p>
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <!-- Delete Form -->
                                                             <form action="" method="POST" style="display:inline;">
                                                                 <input type="hidden" name="userId" value=""
                                                                     id="deleteUserId">
                                                                 <button type="submit"
                                                                     class="btn btn-danger">Delete</button>
                                                             </form>
-                                                            <!-- Deactivate Form -->
                                                             <form action="" method="POST" style="display:inline;">
                                                                 <input type="hidden" name="userId" value=""
                                                                     id="deactivateUserId">

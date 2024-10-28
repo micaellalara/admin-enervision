@@ -27,19 +27,6 @@
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
           <span class="icon-menu"></span>
         </button>
-        <ul class="navbar-nav mr-lg-2">
-          <li class="nav-item nav-search d-none d-lg-block">
-            <div class="input-group">
-              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
-                <span class="input-group-text" id="search">
-                  <i class="icon-search"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now"
-                aria-label="search" aria-describedby="search">
-            </div>
-          </li>
-        </ul>
         <ul class="navbar-nav navbar-nav-right">
           <li class="nav-item dropdown">
             <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
@@ -96,10 +83,6 @@
               <img src="<%= admin.picture %>" alt="profile" />
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="ti-settings text-primary"></i>
-                Settings
-              </a>
               <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                 <i class="ti-power-off text-primary"></i>
                 Logout
@@ -167,10 +150,6 @@
             <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab"
               aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab"
-              aria-controls="chats-section">CHATS</a>
-          </li>
         </ul>
         <div class="tab-content" id="setting-content">
           <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel"
@@ -231,23 +210,6 @@
                   <i class="remove ti-close"></i>
                 </li>
               </ul>
-            </div>
-            <h4 class="px-3 text-muted mt-5 font-weight-light mb-0">Events</h4>
-            <div class="events pt-4 px-3">
-              <div class="wrapper d-flex mb-2">
-                <i class="ti-control-record text-primary mr-2"></i>
-                <span>Feb 11 2018</span>
-              </div>
-              <p class="mb-0 font-weight-thin text-gray">Creating component page build a js</p>
-              <p class="text-gray mb-0">The total number of sessions</p>
-            </div>
-            <div class="events pt-4 px-3">
-              <div class="wrapper d-flex mb-2">
-                <i class="ti-control-record text-primary mr-2"></i>
-                <span>Feb 7 2018</span>
-              </div>
-              <p class="mb-0 font-weight-thin text-gray">Meeting with Alisa</p>
-              <p class="text-gray mb-0 ">Call Sarah Graves</p>
             </div>
           </div>
         </div>
@@ -354,6 +316,20 @@
               </ul>
             </div>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#chats" aria-expanded="false" aria-controls="chats">
+              <i class="icon-contract menu-icon"></i>
+              <span class="menu-title">Intercom Chats</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="chats">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                  <a class="nav-link" href="/chats">Chats</a>
+                </li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </nav>
       <div class="main-panel">
@@ -434,7 +410,7 @@
                           <button type="button" class="btn btn-danger btn-sm"
                             onclick="setConfirmation('delete', '<%= post._id %>')">Delete</button>
                         </td>
-                        
+
                       </tr>
                       <% }) %>
                         <% }) %>
@@ -492,10 +468,10 @@
                   'Content-Type': 'application/json',
                 }
               })
-                .then(response => response.json()) 
+                .then(response => response.json())
                 .then(data => {
                   if (data.success) {
-                    $('#confirmationModal').modal('hide'); 
+                    $('#confirmationModal').modal('hide');
 
                     if (currentAction === 'delete') {
                       const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
@@ -507,9 +483,9 @@
                       // Update the flagged status in the DOM
                       const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
                       if (postRow) {
-                        const statusCell = postRow.querySelector('td:nth-child(7)'); 
+                        const statusCell = postRow.querySelector('td:nth-child(7)');
                         if (statusCell) {
-                          statusCell.innerHTML = '<span class="badge bg-warning">Flagged</span>'; 
+                          statusCell.innerHTML = '<span class="badge bg-warning">Flagged</span>';
                         }
                       }
                       toastr.success('Post successfully flagged!');

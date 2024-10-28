@@ -19,12 +19,14 @@ app.use(methodOverride('_method'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Parse incoming requests
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('view engine', 'ejs');
 app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static('public'));
+
 
 connectToDatabase(io); 
 

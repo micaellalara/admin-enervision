@@ -27,19 +27,6 @@
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
           <span class="icon-menu"></span>
         </button>
-        <ul class="navbar-nav mr-lg-2">
-          <li class="nav-item nav-search d-none d-lg-block">
-            <div class="input-group">
-              <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
-                <span class="input-group-text" id="search">
-                  <i class="icon-search"></i>
-                </span>
-              </div>
-              <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now"
-                aria-label="search" aria-describedby="search">
-            </div>
-          </li>
-        </ul>
         <ul class="navbar-nav navbar-nav-right">
           <li class="nav-item dropdown">
             <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
@@ -97,10 +84,6 @@
 
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="ti-settings text-primary"></i>
-                Settings
-              </a>
               <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
                 <i class="ti-power-off text-primary"></i>
                 Logout
@@ -168,10 +151,6 @@
             <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab"
               aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab"
-              aria-controls="chats-section">CHATS</a>
-          </li>
         </ul>
         <div class="tab-content" id="setting-content">
           <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel"
@@ -233,23 +212,7 @@
                 </li>
               </ul>
             </div>
-            <h4 class="px-3 text-muted mt-5 font-weight-light mb-0">Events</h4>
-            <div class="events pt-4 px-3">
-              <div class="wrapper d-flex mb-2">
-                <i class="ti-control-record text-primary mr-2"></i>
-                <span>Feb 11 2018</span>
-              </div>
-              <p class="mb-0 font-weight-thin text-gray">Creating component page build a js</p>
-              <p class="text-gray mb-0">The total number of sessions</p>
-            </div>
-            <div class="events pt-4 px-3">
-              <div class="wrapper d-flex mb-2">
-                <i class="ti-control-record text-primary mr-2"></i>
-                <span>Feb 7 2018</span>
-              </div>
-              <p class="mb-0 font-weight-thin text-gray">Meeting with Alisa</p>
-              <p class="text-gray mb-0 ">Call Sarah Graves</p>
-            </div>
+           
           </div>
         </div>
       </div>
@@ -355,100 +318,123 @@
               </ul>
             </div>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#chats" aria-expanded="false" aria-controls="chats">
+              <i class="icon-contract menu-icon"></i>
+              <span class="menu-title">Intercom Chats</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="chats">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                  <a class="nav-link" href="/chats">Chats</a>
+                </li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </nav>
       <div class="main-panel">
         <div class="content-wrapper">
-            <div class="header d-flex flex-column align-items-left mb-4">
-                <h2 class="ml-2 mt-3" style="font-size: 30px;">Frequently Asked Questions (FAQs)</h2>
-    
-                <form id="faqForm" method="POST" action="/faqs" style="margin-bottom: 20px;">
-                    <input type="text" name="question" placeholder="Question" required class="form-control mb-2 mt-3">
-                    <textarea name="answer" placeholder="Answer" required class="form-control mb-2"></textarea>
-    
-                    <button type="submit" class="btn btn-primary">Add FAQ</button>
-                </form>
-    
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table table-bordered">
-                        <thead class="thead-light" style="text-align: center; vertical-align: middle;">
-                            <tr>
-                                <th>Question</th>
-                                <th>Answer</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody style="text-align: center; vertical-align: middle;">
-                            <% if (faqs.length === 0) { %>
-                                <tr>
-                                    <td colspan="3">No FAQs available.</td>
-                                </tr>
-                            <% } else { %>
-                                <% faqs.forEach(faq => { %>
-                                    <tr>
-                                        <td><%= faq.question %></td>
-                                        <td><%= faq.answer %></td>
-                                        <td>
-                                            <button class="btn btn-warning" data-toggle="modal" data-target="#editModal<%= faq._id %>">Edit</button>
-                                            <form action="/faqs/<%= faq._id %>?_method=DELETE" method="POST" style="display:inline;">
-                                                <button type="submit" class="btn btn-danger">Delete</button>
-                                            </form>
-                                            
-                                        </td>
-                                    </tr>
-    
-                                    <div class="modal fade" id="editModal<%= faq._id %>" tabindex="-1" role="dialog" aria-labelledby="editModalLabel<%= faq._id %>" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="editModalLabel<%= faq._id %>">Edit FAQ</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <form action="/faqs/<%= faq._id %>?_method=PUT" method="POST">
-                                                    <div class="modal-body">
-                                                        <input type="text" name="question" value="<%= faq.question %>" required class="form-control mb-2">
-                                                        <textarea name="answer" required class="form-control mb-2"><%= faq.answer %></textarea>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-primary">Save changes</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-    
-                                <% }); %>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div>
+          <div class="header d-flex flex-column align-items-left mb-4">
+            <h2 class="ml-2 mt-3" style="font-size: 30px;">Frequently Asked Questions (FAQs)</h2>
+
+            <form id="faqForm" method="POST" action="/faqs" style="margin-bottom: 20px;">
+              <input type="text" name="question" placeholder="Question" required class="form-control mb-2 mt-3">
+              <textarea name="answer" placeholder="Answer" required class="form-control mb-2"></textarea>
+
+              <button type="submit" class="btn btn-primary">Add FAQ</button>
+            </form>
+
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+              <table class="table table-bordered">
+                <thead class="thead-light" style="text-align: center; vertical-align: middle;">
+                  <tr>
+                    <th>Question</th>
+                    <th>Answer</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody style="text-align: center; vertical-align: middle;">
+                  <% if (faqs.length===0) { %>
+                    <tr>
+                      <td colspan="3">No FAQs available.</td>
+                    </tr>
+                    <% } else { %>
+                      <% faqs.forEach(faq=> { %>
+                        <tr>
+                          <td>
+                            <%= faq.question %>
+                          </td>
+                          <td>
+                            <%= faq.answer %>
+                          </td>
+                          <td>
+                            <button class="btn btn-warning" data-toggle="modal"
+                              data-target="#editModal<%= faq._id %>">Edit</button>
+                            <form action="/faqs/<%= faq._id %>?_method=DELETE" method="POST" style="display:inline;">
+                              <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+
+                          </td>
+                        </tr>
+
+                        <div class="modal fade" id="editModal<%= faq._id %>" tabindex="-1" role="dialog"
+                          aria-labelledby="editModalLabel<%= faq._id %>" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel<%= faq._id %>">Edit FAQ</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <form action="/faqs/<%= faq._id %>?_method=PUT" method="POST">
+                                <div class="modal-body">
+                                  <input type="text" name="question" value="<%= faq.question %>" required
+                                    class="form-control mb-2">
+                                  <textarea name="answer" required
+                                    class="form-control mb-2"><%= faq.answer %></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary">Save changes</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
+                        <% }); %>
+                          <% } %>
+                </tbody>
+              </table>
             </div>
+          </div>
         </div>
-    </div>
-    
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      </div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
-                </div>
-                <div class="modal-body">
-                    Modal Content
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
             </div>
+            <div class="modal-body">
+              Modal Content
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
         </div>
-    </div>
-    
-    <script>
-    </script>
-    
+      </div>
+
+      <script>
+      </script>
+
 
       <script src="vendors/js/vendor.bundle.base.js"></script>
       <script src="vendors/datatables.net/jquery.dataTables.js"></script>
