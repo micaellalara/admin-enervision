@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-
     <link rel="shortcut icon" href="/images/enervision.png" />
     <link rel="stylesheet" href="/vendors/feather/feather.css">
     <link rel="stylesheet" href="/vendors/ti-icons/css/themify-icons.css">
@@ -14,9 +13,8 @@
     <link rel="stylesheet" href="/css/vertical-layout-light/style.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
-
 </head>
-<body> 
+<body>
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper full-page-wrapper">
             <div class="content-wrapper d-flex align-items-center auth px-0">
@@ -28,7 +26,6 @@
                             </div>
                             <h4>Hello! Let's get started</h4>
                             <h6 class="font-weight-light">Sign in to continue.</h6>
-                            
                             
                             <form action="/login" method="POST">
                                 <div class="form-group">
@@ -49,18 +46,20 @@
                     </div>
                 </div>
             </div>
-   
         </div>
     </div>
-        <% if (typeof errorMessage !== 'undefined') { %>
-            toastr.error("<%= errorMessage %>");
-        <% } %>
-  
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <% if (errorMessage) { %>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                toastr.error("<%= errorMessage %>");
+            });
+        </script>
+    <% } %>
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="/vendors/js/vendor.bundle.base.js"></script>
     <script src="/js/off-canvas.js"></script>
     <script src="/js/hoverable-collapse.js"></script>

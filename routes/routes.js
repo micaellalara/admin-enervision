@@ -12,19 +12,22 @@ const UserProfile = require('../model/profile.model');
 const Appliance = require('../model/appliances.model');
 const FAQ = require('../model/faqs.model');
 const Chat = require('../model/chats.model');
+const { check, validationResult } = require('express-validator');
+
 
 router.get('/', (req, res) => {
     res.render('home');
 });
 
 router.get('/register', (req, res) => {
-    res.render('register');
+    res.render('register', { errorMessage: null });
 });
 
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
+
     try {
-        const existingAdmin = await Admin.findOne({ email });
+        const existingAdmin = await Admin.findOne({ email: email });
         if (existingAdmin) {
             return res.render('register', { errorMessage: 'Email already exists' });
         }
@@ -34,37 +37,47 @@ router.post('/register', async (req, res) => {
             return res.render('register', { errorMessage: 'Password must be at least 6 characters long and contain at least one uppercase and one lowercase letter' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const newAdmin = new Admin({ name, email, password: hashedPassword });
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newAdmin = new Admin({
+            name: name,
+            email: email,
+            password: hashedPassword,
+        });
+
         await newAdmin.save();
         console.log('Admin registered successfully');
 
         res.redirect('/login');
     } catch (error) {
         console.error('Error registering admin:', error);
-        res.render('register', { errorMessage: 'Server error: ' + error.message });
+        res.render('register', { errorMessage: 'Server error' });
     }
 });
 
+
 router.get('/login', (req, res) => {
-    res.render('login');
+    res.render('login', { errorMessage: null });
 });
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const admin = await Admin.findOne({ email });
+        
         if (!admin) {
-            return res.render('login', { errorMessage: 'Admin not found' });
+            return res.render('login', { errorMessage: 'Email not found' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, admin.password);
+        
         if (!isPasswordValid) {
             return res.render('login', { errorMessage: 'Invalid password' });
         }
 
         const payload = { admin: { id: admin.id } };
         const jwtSecret = process.env.JWT_SECRET || "4715aed3c946f7b0a38e6b534a9583628d84e96d10fbc04700770d572af3dce43625dd";
+
         jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });
