@@ -357,3 +357,57 @@
                                                 $('#deleteForm').attr('action', '/profile/delete/' + userId); // Set form action
                                             });
                                         </script> -->
+
+
+
+
+
+router.post('/flagPost/:postId', async (req, res) => {
+    const postId = req.params.postId;
+
+    try {
+        await Post.findByIdAndUpdate(postId, { flagged: true });
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false });
+    }
+});
+
+router.post('/unflagPost/:postId', async (req, res) => {
+    const postId = req.params.postId;
+
+    try {
+        await Post.findByIdAndUpdate(postId, { flagged: false });
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false });
+    }
+});
+
+
+router.post('/deletePost/:postId', async (req, res) => {
+    const postId = req.params.postId;
+
+    try {
+        await Post.findByIdAndUpdate(postId, { status: 'deleted', deletedAt: new Date() });
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false });
+    }
+});
+
+router.post('/restorePost/:postId', async (req, res) => {
+    const postId = req.params.postId;
+
+    try {
+        await Post.findByIdAndUpdate(postId, { status: 'active', flagged: false, deletedAt: null });
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false });
+    }
+});
+

@@ -344,6 +344,9 @@
             <br>
 
             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+              <% if (flaggedPosts.length===0) { %>
+                <p>No posts have been flagged.</p>
+                <% } else { %>
               <table class="table table-bordered">
                 <thead class="thead-light" style="text-align: center; vertical-align: middle;">
                   <tr>
@@ -357,7 +360,7 @@
                 </thead>
                 <tbody style="text-align: center; vertical-align: middle;">
                   <% flaggedPosts.forEach(post=> { %>
-                    <tr data-post-id="<%= post._id %>"> <!-- Added data-post-id here -->
+                    <tr data-post-id="<%= post._id %>">
                       <td>
                         <%= post.userId.username %>
                       </td>
@@ -386,6 +389,7 @@
                     <% }) %>
                 </tbody>
               </table>
+              <% } %>
             </div>
           </div>
         </div>

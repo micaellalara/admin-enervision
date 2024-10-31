@@ -357,7 +357,6 @@ router.get('/userposts', authenticateToken, async (req, res) => {
     }
 });
 
-
 router.post('/flagPost/:postId', authenticateToken, async (req, res) => {
     try {
         const postId = req.params.postId;
@@ -426,6 +425,12 @@ router.get('/deletedPosts', authenticateToken, async (req, res) => {
         const deletedPosts = await Post.find({ deletedAt: { $ne: null } })
             .populate('userId', 'username uploadPhoto');
 
+        deletedPosts.forEach(post => {
+            if (!post.userId) {
+                console.warn(`Post ${post._id} does not have a valid userId.`);
+            }
+        });
+
         const admin = req.admin;
 
         res.render('deletedPosts', { deletedPosts, admin });
@@ -451,7 +456,6 @@ router.post('/restorePost/:postId', authenticateToken, async (req, res) => {
         post.deletedAt = null;
         await post.save();
 
-        // Send a success response
         res.json({ success: true });
     } catch (error) {
         console.error('Error restoring post:', error);
@@ -481,7 +485,6 @@ router.post('/unflagPost/:postId', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-
 
 
 router.get('/profile', authenticateToken, async (req, res) => {

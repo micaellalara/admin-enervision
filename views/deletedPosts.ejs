@@ -361,8 +361,8 @@
                       <% deletedPosts.forEach(post=> { %>
                         <tr data-post-id="<%= post._id %>">
                           <td>
-                            <%= post.userId.username %>
-                          </td>
+                            <%= post.userId ? post.userId.username : 'User not found' %>
+                        </td>
                           <td>
                             <%= post.title %>
                           </td>
@@ -387,7 +387,7 @@
         </div>
       </div>
 
-      <!-- Bootstrap Modal -->
+
       <div class="modal fade" id="restorePostModal" tabindex="-1" role="dialog" aria-labelledby="restorePostModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
