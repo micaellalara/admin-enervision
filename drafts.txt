@@ -282,3 +282,78 @@
                     </div>
                   </div>
                 </div>
+
+
+
+
+
+
+
+                           <!-- <div class="modal fade" id="confirmDeactivateModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="confirmDeactivateModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title-bold" id="confirmDeactivateModalLabel"
+                                                            style="font-weight: bold;">
+                                                            Confirm Deactivate or Ban User
+                                                        </h5>
+                                                    </div>
+                                                    <div class="modal-body" style="text-align: center;">
+                                                        <p>Are you sure you want to deactivate or ban this user?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Cancel</button>
+                                                        <form id="deactivateForm" action="" method="POST"
+                                                            style="display:inline;">
+                                                            <button type="submit" class="btn btn-danger">Deactivate or
+                                                                Ban</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
+                                            aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="confirmDeleteModalLabel"
+                                                            style="font-weight: bold;">Confirm
+                                                            Delete</h5>
+                                                    </div>
+                                                    <div class="modal-body" style="text-align: center;">
+                                                        <p>Are you sure you want to delete this user? This action cannot
+                                                            be undone.</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-dismiss="modal">Cancel</button>
+                                                        <form id="deleteForm" action="" method="POST"
+                                                            style="display:inline;">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                        <script>
+                                            $('#confirmDeactivateModal').on('show.bs.modal', function (event) {
+                                                var button = $(event.relatedTarget); // Button that triggered the modal
+                                                var userId = button.data('user-id'); // Get user id from data attribute
+                                                console.log('Deactivating user:', userId); // For debugging, check if the correct ID is being passed
+                                                $('#deactivateForm').attr('action', '/profile/deactivate/' + userId); // Set form action
+                                            });
+
+                                            $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+                                                var button = $(event.relatedTarget); // Button that triggered the modal
+                                                var userId = button.data('user-id'); // Get user id from data attribute
+                                                console.log('Deleting user:', userId); // For debugging, check if the correct ID is being passed
+                                                $('#deleteForm').attr('action', '/profile/delete/' + userId); // Set form action
+                                            });
+                                        </script> -->

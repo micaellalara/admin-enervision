@@ -530,7 +530,6 @@ router.get('/user-profiles', authenticateToken, async (req, res) => {
         const currentPage = parseInt(req.query.page) || 1;
         const usersPerPage = 5;
 
-        // Find users and their associated profiles
         const users = await User.find({
             username: { $regex: searchTerm, $options: 'i' }
         }).skip((currentPage - 1) * usersPerPage).limit(usersPerPage);
@@ -636,42 +635,40 @@ router.get('/profile/edit/:id', authenticateToken, async (req, res) => {
     }
 });
 
-router.post('/deleteUser/:id', authenticateToken, async (req, res) => {
+router.post('/user-profiles/deleteUser/:id', async (req, res) => {
+    const userId = req.params.id;
+
     try {
-        const userId = req.params.id;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        // Delete user
         await User.findByIdAndDelete(userId);
-
-        res.redirect('/userProfiles');
+        res.redirect('/user-profiles');
     } catch (error) {
         console.error('Error deleting user:', error);
-        res.status(500).send('Server error');
+        res.redirect('/user-profiles');
     }
 });
 
-router.post('/deactivateUser/:id', authenticateToken, async (req, res) => {
+router.post('/user-profiles/deactivateUser/:id', async (req, res) => {
+    const userId = req.params.id;
+
     try {
-        const userId = req.params.id;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).send('User not found');
-        }
-
-        user.status = 'inactive';
-        await user.save();
-
-        res.redirect('/userProfiles');
+        await User.findByIdAndUpdate(userId, { status: 'deactivated' });
+        res.redirect('/user-profiles');
     } catch (error) {
         console.error('Error deactivating user:', error);
-        res.status(500).send('Server error');
+        res.redirect('/user-profiles');
     }
+});
+
+router.post('/user-profiles/reactivateUser/:id', async (req, res) => {
+    const userId = req.params.id;
+    await User.updateOne({ _id: userId }, { status: 'active' });
+    res.redirect('/user-profiles');
+});
+
+router.post('/user-profiles/restoreUser/:id', async (req, res) => {
+    const userId = req.params.id;
+    await User.findByIdAndUpdate(userId, { status: 'active' });
+    res.redirect('/user-profiles');
 });
 
 router.get('/faqs', authenticateToken, async (req, res) => {
