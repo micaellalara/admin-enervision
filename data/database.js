@@ -2,12 +2,10 @@ const mongoose = require('mongoose');
 const Admin = require('../model/admins');
 const User = require('../model/users');
 
-// Use the URI from the .env file
 const uri = process.env.MONGODB_URI || 'mongodb+srv://22104647:J%40mes2004@enervision-main.elxae.mongodb.net/enervision?retryWrites=true&w=majority';
 
 async function connectToDatabase() {
   try {
-    // Connect directly to the enervision database
     await mongoose.connect(uri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -45,6 +43,3 @@ module.exports = {
   Admin,
   User,
 };
-
-// Connect to the database when the module is loaded
-connectToDatabase();

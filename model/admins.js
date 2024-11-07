@@ -16,16 +16,15 @@ const adminSchema = new mongoose.Schema({
     required: true
   },
   picture: {
-    type: String, // Assuming picture will be stored as a URL
-    required: false // Not required, adjust as needed
+    type: String, 
+    required: false 
   },
   bio: {
     type: String,
-    required: false // Not required, adjust as needed
+    required: false 
   }
 });
 
-// Create a model based on the schema
 const Admin = mongoose.model('Admin', adminSchema);
 
 module.exports = Admin;

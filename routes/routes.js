@@ -12,6 +12,7 @@ const UserProfile = require('../model/profile.model');
 const Appliance = require('../model/appliances.model');
 const FAQ = require('../model/faqs.model');
 const Chat = require('../model/chats.model');
+const Device = require('../model/devices');
 const { check, validationResult } = require('express-validator');
 
 
@@ -825,6 +826,103 @@ router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error sending admin reply:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/devices', authenticateToken, async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.admin.id); 
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        const devices = await Device.find();  // Fetch all devices
+
+        res.render('devicesList', { devices, admin });  // Render the devices list page
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get('/devices/new', authenticateToken, (req, res) => {
+    res.render('devices/new');  // Render the form for creating a new device
+});
+
+router.post('/devices', authenticateToken, async (req, res) => {
+    const { deviceName, description, capacity, material, purchasePrice, powerConsumption, costPerHour, monthlyCost, applianceCategory } = req.body;
+
+    try {
+        const newDevice = new Device({
+            deviceName,
+            description,
+            capacity,
+            material,
+            purchasePrice,
+            powerConsumption,
+            costPerHour,
+            monthlyCost,
+            applianceCategory
+        });
+
+        await newDevice.save();
+        res.redirect('/devices');  
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get('/device/:id', authenticateToken, async (req, res) => {
+    try {
+        const device = await Device.findById(req.params.id);
+        if (!device) {
+            return res.status(404).send('Device not found');
+        }
+        res.json(device);  
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.put('/devices/edit/:id', authenticateToken, async (req, res) => {
+    const { deviceName, description, capacity, material, purchasePrice, powerConsumption, costPerHour, monthlyCost, applianceCategory } = req.body;
+
+    try {
+        const updatedDevice = await Device.findByIdAndUpdate(req.params.id, {
+            deviceName,
+            description,
+            capacity,
+            material,
+            purchasePrice,
+            powerConsumption,
+            costPerHour,
+            monthlyCost,
+            applianceCategory
+        }, { new: true });
+
+        if (!updatedDevice) {
+            return res.status(404).send('Device not found');
+        }
+
+        res.json(updatedDevice);  
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.delete('/devices/delete/:id', authenticateToken, async (req, res) => {
+    try {
+        const deletedDevice = await Device.findByIdAndDelete(req.params.id);
+        if (!deletedDevice) {
+            return res.status(404).send('Device not found');
+        }
+        res.json({ message: 'Device deleted successfully' });  
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
     }
 });
 
