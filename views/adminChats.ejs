@@ -50,11 +50,11 @@
         flex-direction: column;
     }
 
-
     .message-bubble {
         padding: 10px;
         border-radius: 10px;
         max-width: 50%;
+        min-width: 20%;
         margin: 5px 0;
         word-wrap: break-word;
         position: relative;
@@ -72,9 +72,7 @@
         background-color: #f1f1f1;
         color: black;
         align-self: flex-start;
-
     }
-
 
     .message-time {
         display: block;
@@ -82,7 +80,6 @@
         color: black;
         margin-top: 5px;
     }
-
 
     .chat-input {
         display: flex;
@@ -502,13 +499,13 @@
                                 <h2>Inbox</h2>
                             </div>
                             <ul class="list-group" id="user-list">
-                                <% chats.forEach(chat=> { %>
-                                    <% if (chat.messages && chat.messages.length> 0) { %>
+                                <% chats.forEach(chat => { %>
+                                    <% if (chat.messages && chat.messages.length > 0) { %>
                                         <li class="list-group-item user-item">
-                                            <a href="#" class="user-link" data-userid="<%= chat.messages[0].userId %>">
+                                            <a href="#" class="user-link" data-userid="<%= chat.userId %>">
                                                 <div class="user-info">
                                                     <strong>User ID:</strong>
-                                                    <%= chat.messages[0].userId %>
+                                                    <%= chat.userId %>
                                                 </div>
                                                 <div class="last-message">
                                                     <small>
@@ -517,17 +514,15 @@
                                                 </div>
                                             </a>
                                         </li>
-                                        <% } else { %>
-                                            <li class="list-group-item no-message-item">
-                                                <em>No messages found</em>
-                                            </li>
-                                            <% } %>
-                                                <% }) %>
+                                    <% } else { %>
+                                        <li class="list-group-item no-message-item">
+                                            <em>No messages found</em>
+                                        </li>
+                                    <% } %>
+                                <% }) %>
                             </ul>
                         </div>
-
-
-                        <!-- Chat Window Container -->
+        
                         <div class="col-md-9" id="chat-window">
                             <div class="chat-header">
                                 <h3>Conversation</h3>
@@ -536,19 +531,17 @@
                                 <p class="placeholder-message">Select a user to view their messages</p>
                             </div>
                             <div class="chat-input mt-3">
-                                <textarea id="message-input" class="form-control" rows="2"
-                                    placeholder="Type your message here..."></textarea>
+                                <textarea id="message-input" class="form-control" rows="2" placeholder="Type your message here..."></textarea>
                                 <button class="btn btn-primary mt-2" id="send-button">Send</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-
+        
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+        
             <script>
                 $(document).ready(function () {
                     const firstUser = $('#user-list .user-link').first();
@@ -556,7 +549,7 @@
                         loadChat(firstUser.data('userid'));
                         firstUser.addClass('active');
                     }
-
+        
                     $(document).on('click', '.user-link', function (e) {
                         e.preventDefault();
                         const userId = $(this).data('userid');
@@ -564,44 +557,42 @@
                         $(this).addClass('active');
                         loadChat(userId);
                     });
-
+        
                     function loadChat(userId) {
                         $.get(`/chats/${userId}`, function (data) {
-                            $('#messages-list').html('');
-
+                            const messagesContainer = $('#messages-list');
+                            messagesContainer.html('');  // Clear the previous messages
+        
                             if (data.messages && data.messages.length > 0) {
-                                data.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
                                 data.messages.forEach(function (message) {
                                     let messageClass = message.sender === 'admin' ? 'admin-message' : 'user-message';
-                                    $('#messages-list').append(`
+                                    messagesContainer.append(`
                                         <div class="message-bubble mt-2 ${messageClass}">
-                                            <div class="message-text">
-                                                ${message.message}
-                                            </div>
+                                            <div class="message-text">${message.message}</div>
                                             <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
                                         </div>
                                     `);
                                 });
                             } else {
-                                $('#messages-list').append('<p>No messages found for this user.</p>');
+                                messagesContainer.append('<p>No messages found for this user.</p>');
                             }
-
-                            $('#messages-list').scrollTop($('#messages-list')[0].scrollHeight);
+        
+                            // Scroll to the bottom after new messages are added
+                            messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
                         }).fail(function (err) {
                             console.error('Error fetching chat messages:', err);
                             alert('Error fetching chat messages. Please check the console for more details.');
                         });
                     }
-
+        
                     $('#send-button').on('click', function () {
                         const message = $('#message-input').val().trim();
                         const userId = $('.user-link.active').data('userid');
-
+        
                         if (message && userId) {
                             $.post(`/chats/${userId}/reply`, { message: message }, function (response) {
-                                loadChat(userId);
-                                $('#message-input').val('');
+                                loadChat(userId);  // Reload the chat with the new reply
+                                $('#message-input').val('');  // Clear the input field
                             }).fail(function (err) {
                                 console.error('Error sending message:', err);
                                 alert('Error sending message. Please check the console for more details.');
@@ -612,9 +603,6 @@
                     });
                 });
             </script>
-
-
-
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

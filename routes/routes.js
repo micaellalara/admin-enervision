@@ -15,6 +15,12 @@ const Chat = require('../model/chats.model');
 const Device = require('../model/devices');
 const { check, validationResult } = require('express-validator');
 
+router.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache'); 
+    res.setHeader('Expires', '0'); 
+    next();
+});
 
 router.get('/', (req, res) => {
     res.render('home');
@@ -65,13 +71,13 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const admin = await Admin.findOne({ email });
-        
+
         if (!admin) {
             return res.render('login', { errorMessage: 'Email not found' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, admin.password);
-        
+
         if (!isPasswordValid) {
             return res.render('login', { errorMessage: 'Invalid password' });
         }
@@ -389,7 +395,7 @@ router.post('/deletePost/:postId', authenticateToken, async (req, res) => {
         }
 
         post.deletedAt = new Date();
-        
+
 
         await post.save();
         res.json({ success: true, postId: postId });
@@ -425,21 +431,30 @@ router.get('/deletedPosts', authenticateToken, async (req, res) => {
     try {
         const deletedPosts = await Post.find({ deletedAt: { $ne: null } })
             .populate('userId', 'username uploadPhoto');
+        
+        const admin = await Admin.findById(req.admin.id);
 
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        
         deletedPosts.forEach(post => {
             if (!post.userId) {
                 console.warn(`Post ${post._id} does not have a valid userId.`);
             }
         });
 
-        const admin = req.admin;
-
-        res.render('deletedPosts', { deletedPosts, admin });
+        res.render('deletedPosts', { 
+            deletedPosts, 
+            admin 
+        });
     } catch (error) {
         console.error('Error fetching deleted posts:', error);
         res.status(500).send('Server error');
     }
 });
+
 
 router.post('/restorePost/:postId', authenticateToken, async (req, res) => {
     try {
@@ -684,7 +699,7 @@ router.get('/faqs', authenticateToken, async (req, res) => {
             return res.status(404).send('Admin not found');
         }
 
-        res.render('faqs', { faqs, admin }); 
+        res.render('faqs', { faqs, admin });
     } catch (err) {
         console.error('Error fetching FAQs:', err);
         res.status(500).json({ message: 'Server Error' });
@@ -736,44 +751,38 @@ router.delete('/faqs/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
-
-
-
 router.get('/chats', authenticateToken, async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin.id);  // Get admin details
+        const admin = await Admin.findById(req.admin.id); 
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
 
         const chats = await Chat.find({});
 
-        res.render('adminChats', { chats, admin });  
+        res.render('adminChats', { chats, admin }); 
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
-
 router.get('/chats/:userId', authenticateToken, async (req, res) => {
     const userId = req.params.userId;
 
     try {
-        const chat = await Chat.findOne({ 'messages.userId': userId });
+        const chat = await Chat.findOne({ userId });
 
         if (!chat) {
-            return res.status(404).json({ error: 'Chat not found' });
+            return res.status(404).json({ error: 'Chat not found for this user' });
         }
 
         const allMessages = [
             ...chat.messages.map(msg => ({
-                userId: msg.userId,
                 sender: msg.sender,
                 message: msg.message,
                 timestamp: msg.timestamp,
             })),
             ...chat.adminReplies.map(reply => ({
-                userId: 'admin',
-                sender: reply.sender,
+                sender: 'admin',
                 message: reply.message,
                 timestamp: reply.timestamp,
             })),
@@ -781,15 +790,13 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
 
         allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-        res.status(200).json({
-            messages: allMessages
-        });
+        res.status(200).json({ messages: allMessages });
+
     } catch (error) {
-        console.error('Error fetching chat:', error);
+        console.error('Error fetching chat for user:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 
 router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
@@ -806,32 +813,32 @@ router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Admin not found' });
         }
 
-        const chat = await Chat.findOne({ 'messages.userId': userId });
+        const chat = await Chat.findOne({ 'userId': userId });
         if (!chat) {
-            return res.status(404).json({ error: 'Chat not found' });
+            return res.status(404).json({ error: 'Chat not found for this user' });
         }
 
         const adminReply = {
-            userId: admin._id.toString(), 
-            sender: 'admin', 
-            message: message, 
-            timestamp: new Date()
+            sender: 'admin',
+            message: message,
+            timestamp: new Date(),
         };
 
-        chat.adminReplies.push(adminReply); 
+        chat.adminReplies.push(adminReply);
 
         await chat.save();
 
         res.status(200).json({ message: 'Reply sent successfully' });
+
     } catch (error) {
-        console.error('Error sending admin reply:', error);
+        console.error('Error sending reply:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 router.get('/devices', authenticateToken, async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin.id); 
+        const admin = await Admin.findById(req.admin.id);
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
@@ -846,7 +853,7 @@ router.get('/devices', authenticateToken, async (req, res) => {
 });
 
 router.get('/devices/new', authenticateToken, (req, res) => {
-    res.render('devices/new');  // Render the form for creating a new device
+    res.render('devices/new'); 
 });
 
 router.post('/devices', authenticateToken, async (req, res) => {
@@ -866,7 +873,7 @@ router.post('/devices', authenticateToken, async (req, res) => {
         });
 
         await newDevice.save();
-        res.redirect('/devices');  
+        res.redirect('/devices');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -879,7 +886,7 @@ router.get('/device/:id', authenticateToken, async (req, res) => {
         if (!device) {
             return res.status(404).send('Device not found');
         }
-        res.json(device);  
+        res.json(device);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -906,7 +913,7 @@ router.put('/devices/edit/:id', authenticateToken, async (req, res) => {
             return res.status(404).send('Device not found');
         }
 
-        res.json(updatedDevice);  
+        res.json(updatedDevice);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
@@ -919,7 +926,7 @@ router.delete('/devices/delete/:id', authenticateToken, async (req, res) => {
         if (!deletedDevice) {
             return res.status(404).send('Device not found');
         }
-        res.json({ message: 'Device deleted successfully' });  
+        res.json({ message: 'Device deleted successfully' });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
