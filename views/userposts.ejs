@@ -395,10 +395,10 @@
                         <td>
                           <%= new Date(post.createdAt).toLocaleDateString() %>
                         </td>
-                        <td>
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= post.description %>">
                           <%= post.title %>
                         </td>
-                        <td>
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= post.description %>">
                           <%= post.description %>
                         </td>
                         <td>
