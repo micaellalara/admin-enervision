@@ -15,7 +15,16 @@
     <link rel="shortcut icon" href="images/enervision.png" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 </head>
+<style>
+ td {
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 300px;   
+    padding: 8px;
+}
 
+</style>
 <body>
     <div class="container-scroller">
         <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -274,7 +283,7 @@
                         </a>
                         <div class="collapse" id="charts">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="">Providers</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="/providers">Providers</a></li>
                             </ul>
                         </div>
                     </li>
@@ -444,7 +453,7 @@
 
                     <br>
 
-                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
                         <% if (devices.length===0) { %>
                             <p>No devices available.</p>
                             <% } else { %>

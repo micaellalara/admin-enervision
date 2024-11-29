@@ -13,155 +13,15 @@
     <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
     <link rel="stylesheet" href="css/vertical-layout-light/style.css">
     <link rel="shortcut icon" href="images/enervision.png" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 </head>
 <style>
-    #chat-window {
-        display: flex;
-        flex-direction: column;
-        min-height: 600px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        border-left: 1px solid #ddd;
-    }
-
-    .chat-header {
-        padding: 10px 0;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 15px;
-    }
-
-    .chat-header h3 {
-        font-size: 22px;
-        font-weight: bold;
-        color: #333;
-        margin: 0;
-    }
-
-    .conversation-box {
-        flex-grow: 1;
-        height: 400px;
-        overflow-y: auto;
-        padding: 15px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .message-bubble {
-        padding: 10px;
-        border-radius: 10px;
-        max-width: 50%;
-        min-width: 20%;
-        margin: 5px 0;
-        word-wrap: break-word;
-        position: relative;
-    }
-
-    .admin-message {
-        background-color: #1BBC9B;
-        color: white;
-        align-self: flex-end;
-        text-align: left;
-        margin-left: auto;
-    }
-
-    .user-message {
-        background-color: #f1f1f1;
-        color: black;
-        align-self: flex-start;
-    }
-
-    .message-time {
-        display: block;
-        font-size: 0.5em;
-        color: black;
-        margin-top: 5px;
-    }
-
-    .chat-input {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    #message-input {
-        flex-grow: 1;
-        resize: none;
-        border-radius: 8px;
-        padding: 10px;
-        border: 1px solid #ddd;
-        height: 50px;
-    }
-
-    #send-button {
-        padding: 8px 20px;
-        font-weight: bold;
-        border-radius: 8px;
-        transition: background-color 0.2s;
-        align-self: flex-end;
-        height: 50px;
-    }
-
-    #send-button:hover {
-        background-color: #0056b3;
-    }
-
-    #user-list-container {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-right: 1px solid #ddd;
-    }
-
-    #user-list-container .header h2 {
-        font-size: 20px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    #user-list {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .user-item,
-    .no-message-item {
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 10px;
-        transition: background-color 0.2s;
-    }
-
-    .user-item:hover {
-        background-color: #e9ecef;
-    }
-
-    .user-item a {
-        text-decoration: none;
-        color: #333;
-        display: block;
-    }
-
-    .user-item .user-info {
-        font-size: 16px;
-        font-weight: bold;
-        color: #1BBC9B;
-    }
-
-    .user-item .last-message {
-        font-size: 14px;
-        color: #555;
-    }
-
-    .no-message-item {
-        text-align: center;
-        color: #999;
-        font-style: italic;
-        background-color: #f1f1f1;
+    td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 300px;
+        padding: 8px;
     }
 </style>
 
@@ -232,7 +92,6 @@
                     <li class="nav-item nav-profile dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
                             <img src="<%= admin.picture %>" alt="profile" />
-
 
                         </a>
                         <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
@@ -490,151 +349,287 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false" aria-controls="tables">
-                          <i class="icon-grid-2 menu-icon"></i>
-                          <span class="menu-title">Appliances</span>
-                          <i class="menu-arrow"></i>
+                        <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false"
+                            aria-controls="tables">
+                            <i class="icon-grid-2 menu-icon"></i>
+                            <span class="menu-title">Appliances</span>
+                            <i class="menu-arrow"></i>
                         </a>
                         <div class="collapse" id="devices">
-                          <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
-                          </ul>
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
+                            </ul>
                         </div>
-                      </li>
+                    </li>
                 </ul>
             </nav>
             <div class="main-panel">
                 <div class="content-wrapper">
-                    <div class="row">
-                        <div class="col-md-3 border-right" id="user-list-container">
-                            <div class="header d-flex justify-content-between mb-4">
-                                <h2>Inbox</h2>
-                            </div>
-                            <ul class="list-group" id="user-list">
-                                <% chats.forEach(chat => { %>
-                                    <% if (chat.messages && chat.messages.length > 0) { %>
-                                        <li class="list-group-item user-item">
-                                            <a href="#" class="user-link" data-userid="<%= chat.userId %>">
-                                                <div class="user-info">
-                                                    <strong>User Name:</strong>
-                                                    <%= chat.userName %>
-                                                </div>
-                                                <div class="last-message">
-                                                    <small>
-                                                        <%= chat.messages[chat.messages.length - 1].message %>
-                                                    </small>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    <% } else { %>
-                                        <li class="list-group-item no-message-item">
-                                            <em>No messages found</em>
-                                        </li>
-                                    <% } %>
-                                <% }) %>
-                            </ul>
-                            
-                            </ul>
-                            
+                    <div class="header d-flex align-items-center justify-content-between mb-4">
+                        <div class="d-flex align-items-center">
+                            <img src="/images/provider.png" style="width: 50px; height: 50px;"
+                                class="header-icon" alt="">
+                            <h2 class="ml-2" style="font-size: 30px;">Energy Provider Management</h2>
                         </div>
-        
-                        <div class="col-md-9" id="chat-window">
-                            <div class="chat-header">
-                                <h3>Conversation</h3>
-                            </div>
-                            <div id="messages-list" class="conversation-box">
-                                <p class="placeholder-message">Select a user to view their messages</p>
-                            </div>
-                            <div class="chat-input mt-3">
-                                <textarea id="message-input" class="form-control" rows="2" placeholder="Type your message here..."></textarea>
-                                <button class="btn btn-primary mt-2" id="send-button">Send</button>
+                        <button type="button" class="btn btn-success mb-3" data-toggle="modal"
+                            data-target="#addProviderModal" style="background-color: #1BBC9B; width: 20%;">
+                            <i class="fas fa-plus-circle mr-2" style="color: white;"></i> Add New Provider
+                        </button>
+                    </div>
+
+                    <div class="modal fade" id="addProviderModal" tabindex="-1" role="dialog"
+                        aria-labelledby="addProviderModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addProviderModalLabel">Add New Provider</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form id="addProviderForm">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="providerName">Provider Name</label>
+                                            <input type="text" class="form-control" id="providerName"
+                                                name="providerName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="ratePerKwh">Rate Per kWh</label>
+                                            <input type="number" class="form-control" id="ratePerKwh" name="ratePerKwh"
+                                                step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Add Provider</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
+
+                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                        <% if (providers.length===0) { %>
+                            <p>No providers available.</p>
+                            <% } else { %>
+                                <table class="table table-bordered">
+                                    <thead class="thead-light" style="text-align: center; vertical-align: middle;">
+                                        <tr>
+                                            <th>Provider Name</th>
+                                            <th>Rate Per kWh</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="text-align: center; vertical-align: middle;">
+                                        <% providers.forEach(provider=> { %>
+                                            <tr data-provider-id="<%= provider._id %>">
+                                                <td>
+                                                    <%= provider.providerName %>
+                                                </td>
+                                                <td>
+                                                    <%= provider.ratePerKwh %>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-warning btn-sm"
+                                                        onclick="showEditProviderModal('<%= provider._id %>')">Edit</button>
+                                                    <button class="btn btn-danger btn-sm"
+                                                        onclick="showDeleteProviderModal('<%= provider._id %>')">Delete</button>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                                <% } %>
+                    </div>
+
+                    <div class="modal fade" id="editProviderModal" tabindex="-1" role="dialog"
+                        aria-labelledby="editProviderModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editProviderModalLabel">Edit Provider</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form id="editProviderForm">
+                                    <input type="hidden" id="editProviderId">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="editProviderName">Provider Name</label>
+                                            <input type="text" class="form-control" id="editProviderName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editRatePerKwh">Rate Per kWh</label>
+                                            <input type="number" class="form-control" id="editRatePerKwh" step="0.01"
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="deleteProviderModal" tabindex="-1" role="dialog"
+                        aria-labelledby="deleteProviderModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteProviderModalLabel">Delete Provider</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete this provider?</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger"
+                                        id="deleteProviderButton">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        // Function to show the edit modal and populate the fields with provider data
+                        function showEditProviderModal(providerId) {
+                            fetch(`/providers/${providerId}`)
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to fetch provider details');
+                                    return response.json();
+                                })
+                                .then(provider => {
+                                    document.getElementById("editProviderId").value = provider._id;
+                                    document.getElementById("editProviderName").value = provider.providerName;
+                                    document.getElementById("editRatePerKwh").value = provider.ratePerKwh;
+                                    $('#editProviderModal').modal('show');
+                                })
+                                .catch(err => console.error(err));
+                        }
+
+                        // Edit provider functionality
+                        document.getElementById("editProviderForm").onsubmit = function (event) {
+                            event.preventDefault();
+
+                            const providerId = document.getElementById("editProviderId").value;
+                            const data = {
+                                providerName: document.getElementById("editProviderName").value.trim(),
+                                ratePerKwh: parseFloat(document.getElementById("editRatePerKwh").value)
+                            };
+
+                            fetch(`/providers/edit/${providerId}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            })
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to update provider');
+                                    return response.json();
+                                })
+                                .then(updatedProvider => {
+                                    const row = document.querySelector(`tr[data-provider-id='${providerId}']`);
+                                    row.querySelector('td:nth-child(1)').textContent = updatedProvider.providerName;
+                                    row.querySelector('td:nth-child(2)').textContent = updatedProvider.ratePerKwh;
+                                    $('#editProviderModal').modal('hide');
+                                })
+                                .catch(err => console.error(err));
+                        };
+
+                        // Function to show the delete modal and bind the delete operation
+                        function showDeleteProviderModal(providerId) {
+                            $('#deleteProviderModal').modal('show');
+                            document.getElementById("deleteProviderButton").onclick = function () {
+                                fetch(`/providers/delete/${providerId}`, {
+                                    method: 'DELETE'
+                                })
+                                    .then(response => {
+                                        if (!response.ok) throw new Error('Failed to delete provider');
+                                        document.querySelector(`tr[data-provider-id='${providerId}']`).remove();
+                                        $('#deleteProviderModal').modal('hide');
+                                    })
+                                    .catch(err => console.error(err));
+                            };
+                        }
+
+                        document.getElementById("addProviderForm").onsubmit = function (event) {
+                            event.preventDefault();
+
+                            const data = {
+                                providerName: document.getElementById("providerName").value.trim(),
+                                ratePerKwh: parseFloat(document.getElementById("ratePerKwh").value)
+                            };
+
+                            fetch('/providers', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            })
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to add provider');
+                                    return response.json();
+                                })
+                                .then(responseData => {
+                                    const newProvider = responseData.newProvider;
+                                    console.log(newProvider);
+
+                                    const tbody = document.querySelector("table tbody");
+                                    const newRow = document.createElement("tr");
+                                    newRow.setAttribute("data-provider-id", newProvider._id);
+                                    newRow.innerHTML = `
+            <td>${newProvider.providerName}</td>
+            <td>${newProvider.ratePerKwh}</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="showEditProviderModal('${newProvider._id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="showDeleteProviderModal('${newProvider._id}')">Delete</button>
+            </td>
+        `;
+                                    tbody.appendChild(newRow);
+                                    $('#addProviderModal').modal('hide');
+                                })
+                                .catch(err => console.error(err));
+                        };
+
+                    </script>
+
                 </div>
             </div>
-        
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        
-            <script>
-                $(document).ready(function () {
-                    const firstUser = $('#user-list .user-link').first();
-                    if (firstUser.length) {
-                        loadChat(firstUser.data('userid'));
-                        firstUser.addClass('active');
-                    }
-        
-                    $(document).on('click', '.user-link', function (e) {
-                        e.preventDefault();
-                        const userId = $(this).data('userid');
-                        $('.user-link').removeClass('active');
-                        $(this).addClass('active');
-                        loadChat(userId);
-                    });
-        
-                    function loadChat(userId) {
-                        $.get(`/chats/${userId}`, function (data) {
-                            const messagesContainer = $('#messages-list');
-                            messagesContainer.html('');  // Clear the previous messages
-        
-                            if (data.messages && data.messages.length > 0) {
-                                data.messages.forEach(function (message) {
-                                    let messageClass = message.sender === 'admin' ? 'admin-message' : 'user-message';
-                                    messagesContainer.append(`
-                                        <div class="message-bubble mt-2 ${messageClass}">
-                                            <div class="message-text">${message.message}</div>
-                                            <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
-                                        </div>
-                                    `);
-                                });
-                            } else {
-                                messagesContainer.append('<p>No messages found for this user.</p>');
-                            }
-        
-                            // Scroll to the bottom after new messages are added
-                            messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
-                        }).fail(function (err) {
-                            console.error('Error fetching chat messages:', err);
-                            alert('Error fetching chat messages. Please check the console for more details.');
-                        });
-                    }
-        
-                    $('#send-button').on('click', function () {
-                        const message = $('#message-input').val().trim();
-                        const userId = $('.user-link.active').data('userid');
-        
-                        if (message && userId) {
-                            $.post(`/chats/${userId}/reply`, { message: message }, function (response) {
-                                loadChat(userId);  // Reload the chat with the new reply
-                                $('#message-input').val('');  // Clear the input field
-                            }).fail(function (err) {
-                                console.error('Error sending message:', err);
-                                alert('Error sending message. Please check the console for more details.');
-                            });
-                        } else {
-                            alert('Please select a user and enter a message.');
-                        }
-                    });
-                });
-            </script>
-
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-            <script src="vendors/js/vendor.bundle.base.js"></script>
-            <script src="vendors/datatables.net/jquery.dataTables.js"></script>
-            <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
-            <script src="js/dataTables.select.min.js"></script>
-            <script src="js/off-canvas.js"></script>
-            <script src="js/hoverable-collapse.js"></script>
-            <script src="js/template.js"></script>
-            <script src="js/settings.js"></script>
-            <script src="js/todolist.js"></script>
-            <script src="js/Chart.roundedBarCharts.js"></script>
-
-
         </div>
+
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center ">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+                    EnerVision</a> from
+                    PNPh Class of 2024 | All rights reserved.</span>
+            </div>
+        </footer>
     </div>
+
+
+    <script src="vendors/js/vendor.bundle.base.js"></script>
+    <script src="vendors/chart.js/Chart.min.js"></script>
+    <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+    <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+    <script src="js/dataTables.select.min.js"></script>
+    <script src="js/off-canvas.js"></script>
+    <script src="js/hoverable-collapse.js"></script>
+    <script src="js/template.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/todolist.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/Chart.roundedBarCharts.js"></script>
 </body>
 
 </html>

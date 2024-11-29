@@ -13,12 +13,13 @@ const Appliance = require('../model/appliances.model');
 const FAQ = require('../model/faqs.model');
 const Chat = require('../model/chats.model');
 const Device = require('../model/devices');
+const EnergyProvider = require('../model/energy_provider.model');
 const { check, validationResult } = require('express-validator');
 
 router.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache'); 
-    res.setHeader('Expires', '0'); 
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     next();
 });
 
@@ -431,23 +432,23 @@ router.get('/deletedPosts', authenticateToken, async (req, res) => {
     try {
         const deletedPosts = await Post.find({ deletedAt: { $ne: null } })
             .populate('userId', 'username uploadPhoto');
-        
+
         const admin = await Admin.findById(req.admin.id);
 
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
 
-        
+
         deletedPosts.forEach(post => {
             if (!post.userId) {
                 console.warn(`Post ${post._id} does not have a valid userId.`);
             }
         });
 
-        res.render('deletedPosts', { 
-            deletedPosts, 
-            admin 
+        res.render('deletedPosts', {
+            deletedPosts,
+            admin
         });
     } catch (error) {
         console.error('Error fetching deleted posts:', error);
@@ -666,19 +667,19 @@ router.post('/user-profiles/deleteUser/:id', async (req, res) => {
     }
 });
 
-router.post('/user-profiles/deactivateUser/:id', async (req, res) => {
+router.post('/user-profiles/banUser/:id', async (req, res) => {
     const userId = req.params.id;
 
     try {
-        await User.findByIdAndUpdate(userId, { status: 'deactivated' });
+        await User.findByIdAndUpdate(userId, { status: 'banned' });
         res.redirect('/user-profiles');
     } catch (error) {
-        console.error('Error deactivating user:', error);
+        console.error('Error ban of user:', error);
         res.redirect('/user-profiles');
     }
 });
 
-router.post('/user-profiles/reactivateUser/:id', async (req, res) => {
+router.post('/user-profiles/unbanUser/:id', async (req, res) => {
     const userId = req.params.id;
     await User.updateOne({ _id: userId }, { status: 'active' });
     res.redirect('/user-profiles');
@@ -753,26 +754,37 @@ router.delete('/faqs/:id', authenticateToken, async (req, res) => {
 });
 router.get('/chats', authenticateToken, async (req, res) => {
     try {
-        const admin = await Admin.findById(req.admin.id); 
+        const admin = await Admin.findById(req.admin.id);
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
 
         const chats = await Chat.find({});
 
-        res.render('adminChats', { chats, admin }); 
+        res.render('adminChats', { chats, admin });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
+
 router.get('/chats/:userId', authenticateToken, async (req, res) => {
     const userId = req.params.userId;
 
     try {
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
         const chat = await Chat.findOne({ userId });
 
         if (!chat) {
             return res.status(404).json({ error: 'Chat not found for this user' });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
 
         const allMessages = [
@@ -790,7 +802,10 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
 
         allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-        res.status(200).json({ messages: allMessages });
+        res.render('adminChats', {
+            chats: allMessages,
+            userName: user.username
+        });
 
     } catch (error) {
         console.error('Error fetching chat for user:', error);
@@ -853,7 +868,7 @@ router.get('/devices', authenticateToken, async (req, res) => {
 });
 
 router.get('/devices/new', authenticateToken, (req, res) => {
-    res.render('devices/new'); 
+    res.render('devices/new');
 });
 
 router.post('/devices', authenticateToken, async (req, res) => {
@@ -927,6 +942,88 @@ router.delete('/devices/delete/:id', authenticateToken, async (req, res) => {
             return res.status(404).send('Device not found');
         }
         res.json({ message: 'Device deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+router.get('/providers', authenticateToken, async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        const providers = await EnergyProvider.find();
+
+        res.render('energyProvider', { providers, admin }); 
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+
+router.post('/providers', async (req, res) => {
+    try {
+        const { providerName, ratePerKwh } = req.body;
+
+        const newProvider = new EnergyProvider({ providerName, ratePerKwh });
+        await newProvider.save();
+
+        res.status(201).json({ message: 'Energy provider added successfully', newProvider });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add energy provider', details: error.message });
+    }
+});
+
+router.put('/providers/edit/:id', authenticateToken, async (req, res) => {
+    try {
+        const { providerName, ratePerKwh } = req.body;
+
+        const updatedProvider = await EnergyProvider.findByIdAndUpdate(
+            req.params.id,
+            { providerName, ratePerKwh },
+            { new: true }
+        );
+
+        if (!updatedProvider) {
+            return res.status(404).send('Provider not found');
+        }
+
+        res.json(updatedProvider);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.delete('/providers/delete/:id', authenticateToken, async (req, res) => {
+    try {
+        const deletedProvider = await EnergyProvider.findByIdAndDelete(req.params.id);
+
+        if (!deletedProvider) {
+            return res.status(404).send('Provider not found');
+        }
+
+        res.status(204).send(); // No content, deletion successful
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.get('/providers/:id', authenticateToken, async (req, res) => {
+    try {
+        const provider = await EnergyProvider.findById(req.params.id);
+
+        if (!provider) {
+            return res.status(404).send('Provider not found');
+        }
+
+        res.json(provider);
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

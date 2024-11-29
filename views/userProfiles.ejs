@@ -277,7 +277,7 @@
                         </a>
                         <div class="collapse" id="charts">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="">Providers</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="/providers">Providers</a></li>
                             </ul>
                         </div>
                     </li>
@@ -396,15 +396,15 @@
                                                                 </button>
             
                                                                 <% if (user.status === 'active') { %>
-                                                                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#deactivateModal" data-user-id="<%= user.id %>">
-                                                                        Deactivate
+                                                                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#banModal" data-user-id="<%= user.id %>">
+                                                                        Ban
                                                                     </button>
                                                                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-user-id="<%= user.id %>">
                                                                         Delete
                                                                     </button>
-                                                                <% } else if (user.status === 'deactivated') { %>
-                                                                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#reactivateModal" data-user-id="<%= user.id %>">
-                                                                        Reactivate
+                                                                <% } else if (user.status === 'banned') { %>
+                                                                    <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#unbanModal" data-user-id="<%= user.id %>">
+                                                                        Unban
                                                                     </button>
                                                                     <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-user-id="<%= user.id %>">
                                                                         Delete
@@ -434,21 +434,21 @@
                                         </nav>
                                     </div>
             
-                                    <div id="deactivateModal" class="modal fade" tabindex="-1" role="dialog">
+                                    <div id="banModal" class="modal fade" tabindex="-1" role="dialog">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Deactivate User</h5>
+                                                    <h5 class="modal-title">Ban User</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to deactivate this user?</p>
+                                                    <p>Are you sure you want to ban this user?</p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form id="deactivateForm" method="POST" style="display:inline;">
-                                                        <button type="submit" class="btn btn-warning">Deactivate</button>
+                                                    <form id="banForm" method="POST" style="display:inline;">
+                                                        <button type="submit" class="btn btn-warning">Ban</button>
                                                     </form>
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                 </div>
@@ -456,21 +456,21 @@
                                         </div>
                                     </div>
             
-                                    <div id="reactivateModal" class="modal fade" tabindex="-1" role="dialog">
+                                    <div id="unbanModal" class="modal fade" tabindex="-1" role="dialog">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Reactivate User</h5>
+                                                    <h5 class="modal-title">Unban User</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Are you sure you want to reactivate this user?</p>
+                                                    <p>Are you sure you want to unban this user?</p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <form id="reactivateForm" method="POST" style="display:inline;">
-                                                        <button type="submit" class="btn btn-success">Reactivate</button>
+                                                    <form id="unBanForm" method="POST" style="display:inline;">
+                                                        <button type="submit" class="btn btn-success">Unban</button>
                                                     </form>
                                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                 </div>
@@ -529,16 +529,16 @@
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
                     $(document).ready(function () {
-                        $('#deactivateModal').on('show.bs.modal', function (event) {
+                        $('#banModal').on('show.bs.modal', function (event) {
                             var button = $(event.relatedTarget);
                             var userId = button.data('user-id');
-                            $('#deactivateForm').attr('action', '/user-profiles/deactivateUser/' + userId);
+                            $('#banForm').attr('action', '/user-profiles/banUser/' + userId);
                         });
             
-                        $('#reactivateModal').on('show.bs.modal', function (event) {
+                        $('#unbanModal').on('show.bs.modal', function (event) {
                             var button = $(event.relatedTarget);
                             var userId = button.data('user-id');
-                            $('#reactivateForm').attr('action', '/user-profiles/reactivateUser/' + userId);
+                            $('#unBanForm').attr('action', '/user-profiles/unbanUser/' + userId);
                         });
             
                         $('#deleteModal').on('show.bs.modal', function (event) {
