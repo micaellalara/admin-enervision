@@ -462,9 +462,6 @@
                                     </h6>
                                 </div>
                                 <div class="mb-3">
-                                    <h6><strong>Occupation:</strong> <span id="modalOccupation"></span></h6>
-                                </div>
-                                <div class="mb-3">
                                     <h6><strong>Posts Count:</strong> <span id="modalPostCount"></span></h6>
                                 </div>
                                 <div class="mb-3">
@@ -483,9 +480,6 @@
                                 </div>
                                 <div class="mb-3">
                                     <h6><strong>Ban Date:</strong> <span id="modalBanDate"></span></h6>
-                                </div>
-                                <div class="mb-3">
-                                    <h6><strong>Energy Diary:</strong> <span id="modalEnergyDiary"></span></h6>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -525,7 +519,6 @@
                                         } else {
                                             statusElement.classList.add('badge', 'badge-warning');
                                         }
-                                        document.getElementById('modalOccupation').innerText = user.occupation;
                                         document.getElementById('modalPostCount').innerText = user.postCount;
                                         document.getElementById('modalApplianceCount').innerText = user.applianceCount;
                                         document.getElementById('modalKwhRate').innerText = user.kwhRate;

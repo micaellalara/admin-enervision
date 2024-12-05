@@ -16,7 +16,7 @@ async function connectToDatabase() {
   }
 }
 
-async function addAdmin(name, email, password) {
+async function addAdmin(username, email, password) {
   try {
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
@@ -24,7 +24,7 @@ async function addAdmin(name, email, password) {
     }
 
     const newAdmin = new Admin({
-      name,
+      username,
       email,
       password,
     });

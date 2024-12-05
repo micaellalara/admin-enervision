@@ -17,6 +17,7 @@ const postSchema = new Schema({
     ref: 'User',
     required: true
   },
+  tags : String,
   suggestions: [{ type: Schema.Types.ObjectId, ref: 'Suggestion' }],
   flagged: {
     type: Boolean,

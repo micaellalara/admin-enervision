@@ -9,11 +9,14 @@
   <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
   <link rel="stylesheet" href="vendors/datatables.net-bs4/dataTables.bootstrap4.css">
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" type="text/css" href="js/select.dataTables.min.css">
   <link rel="stylesheet" href="css/vertical-layout-light/style.css">
   <link rel="shortcut icon" href="images/enervision.png" />
 </head>
+
 
 <body>
   <div class="container-scroller">
@@ -39,7 +42,7 @@
               </a>
             </div>
           </li>
-       
+
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
           data-toggle="offcanvas">
@@ -293,13 +296,18 @@
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="header d-flex flex-column align-items-left mb-4">
-            <div class="d-flex align-items-left justify-content-left">
-              <img src="/images/userpost.png" style="width: 100px; height: 50px;" class="header-icon"
-                alt="User Posts Icon">
-              <h2 class="ml-2 mt-3" style="font-size: 45px;">User Post Management</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="d-flex align-items-center">
+                <img src="/images/userpost.png" style="width: 100px; height: 50px;" class="header-icon" alt="User Posts Icon">
+                <h2 class="ml-2 mt-3" style="font-size: 45px;">User Post Management</h2>
+              </div>
+            
+              <button type="button" class="btn btn-success mt-4 mb-3" data-toggle="modal" data-target="#addPostModal"
+                style="background-color: #1BBC9B; width: 20%;">
+                <i class="fas fa-plus-circle mr-2" style="color: white;"></i> Add New Post
+              </button>
             </div>
-            <br>
-
+          
             <form action="/userposts" method="GET" class="mb-3">
               <div class="input-group">
                 <input type="text" name="username" class="form-control" placeholder="Search by Username"
@@ -316,6 +324,7 @@
                     <th>Username</th>
                     <th>Date Posted</th>
                     <th>Title</th>
+                    <th>Category Tag</th>
                     <th>Description</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -332,10 +341,15 @@
                         <td>
                           <%= new Date(post.createdAt).toLocaleDateString() %>
                         </td>
-                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= post.description %>">
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                          title="<%= post.description %>">
                           <%= post.title %>
                         </td>
-                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<%= post.description %>">
+                        <td>
+                          <%= post.tags %>
+                        </td>
+                        <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                          title="<%= post.description %>">
                           <%= post.description %>
                         </td>
                         <td>
@@ -383,74 +397,162 @@
           </div>
         </div>
 
-        <script>
-          let currentAction = '';
-          let currentPostId = '';
-
-          function setConfirmation(action, postId) {
-            currentAction = action;
-            currentPostId = postId;
-
-            document.getElementById('confirmationMessage').innerText =
-              action === 'flag' ? 'Are you sure you want to flag this post?' :
-                'Are you sure you want to delete this post? This action cannot be undone.';
-
-            $('#confirmationModal').modal('show');
-          }
-
-          document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('confirmButton').addEventListener('click', function () {
-              const url = currentAction === 'flag' ? '/flagPost/' + currentPostId : '/deletePost/' + currentPostId;
-              const method = 'POST';
-
-              fetch(url, {
-                method: method,
-                headers: {
-                  'Content-Type': 'application/json',
-                }
-              })
-                .then(response => response.json())
-                .then(data => {
-                  if (data.success) {
-                    $('#confirmationModal').modal('hide');
-
-                    if (currentAction === 'delete') {
-                      const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
-                      if (postRow) {
-                        postRow.remove();
-                      }
-                      toastr.success('Post successfully deleted!');
-                    } else if (currentAction === 'flag') {
-                      const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
-                      if (postRow) {
-                        const statusCell = postRow.querySelector('td:nth-child(7)');
-                        if (statusCell) {
-                          statusCell.innerHTML = '<span class="badge bg-warning">Flagged</span>';
-                        }
-                      }
-                      toastr.success('Post successfully flagged!');
-                    }
-                  } else {
-                    toastr.error('An error occurred while flagging the post.');
-                  }
-                })
-                .catch(error => {
-                  console.error('Error:', error);
-                  toastr.error('An error occurred while processing your request. Please try again.');
-                });
-            });
-          });
-        </script>
+        <div class="modal fade" id="addPostModal" tabindex="-1" role="dialog" aria-labelledby="addPostModalLabel"
+        aria-hidden="true">
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="addPostModalLabel">Create a Post</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <form id="addPostForm" action="/createPost" method="POST">
+                      <div class="modal-body">
+                          <div class="form-group">
+                              <label for="title">Post Title</label>
+                              <input type="text" class="form-control" id="title" name="title" required>
+                          </div>
+                          <div class="form-group">
+                              <label for="description">Description</label>
+                              <textarea class="form-control" id="description" name="description"></textarea>
+                          </div>
+                          <div class="form-group">
+                              <label for="tags">Select Tag</label>
+                              <select class="form-control" id="tags" name="tags" required>
+                                  <option value="Renewable Energy">Renewable Energy</option>
+                                  <option value="Solar Energy">Solar Energy</option>
+                                  <option value="Green Living">Green Living</option>
+                                  <option value="Energy Conservation">Energy Conservation</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save Post</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+      
 
       </div>
     </div>
-    <footer class="footer">
-      <div class="d-sm-flex justify-content-center ">
-        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
-          EnerVision</a> from
-          PNPh Class of 2024 | All rights reserved.</span>
-      </div>
-    </footer>
+
+    <script>
+      let currentAction = '';
+      let currentPostId = '';
+
+      function setConfirmation(action, postId) {
+        currentAction = action;
+        currentPostId = postId;
+
+        document.getElementById('confirmationMessage').innerText =
+          action === 'flag' ? 'Are you sure you want to flag this post?' :
+            'Are you sure you want to delete this post? This action cannot be undone.';
+
+        $('#confirmationModal').modal('show');
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('confirmButton').addEventListener('click', function () {
+          const url = currentAction === 'flag' ? '/flagPost/' + currentPostId : '/deletePost/' + currentPostId;
+          const method = 'POST';
+
+          fetch(url, {
+            method: method,
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                $('#confirmationModal').modal('hide');
+
+                if (currentAction === 'delete') {
+                  const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
+                  if (postRow) {
+                    postRow.remove();
+                  }
+                  toastr.success('Post successfully deleted!');
+                } else if (currentAction === 'flag') {
+                  const postRow = document.querySelector(`tr[data-post-id="${currentPostId}"]`);
+                  if (postRow) {
+                    const statusCell = postRow.querySelector('td:nth-child(7)');
+                    if (statusCell) {
+                      statusCell.innerHTML = '<span class="badge bg-warning">Flagged</span>';
+                    }
+                  }
+                  toastr.success('Post successfully flagged!');
+                }
+              } else {
+                toastr.error('An error occurred while flagging the post.');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              toastr.error('An error occurred while processing your request. Please try again.');
+            });
+        });
+      });
+    </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+      $('#addPostBtn').on('click', function() {
+          $('#addPostModal').modal('show');
+      });
+  
+      $('#addPostForm').on('submit', function(e) {
+          e.preventDefault(); 
+  
+          const title = $('#title').val();
+          const description = $('#description').val();
+          const selectedTags = $('#tags').val(); 
+  
+          console.log('Title:', title);
+          console.log('Description:', description);
+          console.log('Tags:', selectedTags);
+  
+          $.ajax({
+              url: '/createPost', 
+              type: 'POST',
+              headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+              },
+              data: JSON.stringify({
+                  title: title,
+                  description: description,
+                  tags: selectedTags 
+              }),
+              contentType: 'application/json',
+              success: function(response) {
+                  if (response.success) {
+                      $('#addPostModal').modal('hide'); 
+                      location.reload();
+                  } else {
+                      alert('Error creating post: ' + response.message);
+                  }
+              },
+              error: function(error) {
+                  console.error('Error creating post:', error);
+                  alert('An error occurred while creating the post.');
+              }
+          });
+      });
+  </script>
+  </div>
+  </div>
+  <footer class="footer">
+    <div class="d-sm-flex justify-content-center ">
+      <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+        EnerVision</a> from
+        PNPh Class of 2024 | All rights reserved.</span>
+    </div>
+  </footer>
   </div>
 
 

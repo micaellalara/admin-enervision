@@ -197,7 +197,10 @@
             <div class="collapse" id="user-posts">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
-                  <a class="nav-link" href="/userposts">Posts</a>
+                  <a class="nav-link" href="/userposts">All User Posts</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="">Reported Posts</a>
                 </li>
               </ul>
             </div>
@@ -296,19 +299,16 @@
                   <div class="card-body">
                     <h4 class="card-title">Admin Information</h4>
                     <p><strong>Name:</strong>
-                      <%= admin.name %>
+                      <%= admin.username %>
                     </p>
                     <p><strong>Email:</strong>
                       <%= admin.email %>
-                    </p>
-                    <p><strong>Bio:</strong>
-                      <%= admin.bio %>
                     </p>
                     <p><strong>Picture:</strong></p>
 
                     <% if (admin.picture) { %>
                       <div style="max-width: 300px; margin: auto;">
-                        <img src="<%= admin.picture %>" class="img-fluid   rounded" alt="Admin Picture"
+                        <img src="<%= admin.picture %>" alt="Profile Picture" class="img-fluid mb-3  rounded" alt="Admin Picture"
                           style="max-width: 50%; height: 10%;">
                       </div>
                       <% } else { %>
@@ -322,32 +322,26 @@
               </div>
               <div class="col-md-6">
                 <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Update Profile</h4>
-                    <form action="/profile" method="POST" enctype="multipart/form-data">
-                      <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" class="form-control" value="<%= admin.name %>"
-                          required>
-                      </div>
-                      <div class="form-group">
-                        <label for="email">Email</label>
-                        <input disabled type="email" id="email" name="email" class="form-control"
-                          value="<%= admin.email %>" required>
-                      </div>
-                      <div class="form-group">
-                        <label for="bio">Bio</label>
-                        <textarea id="bio" name="bio" class="form-control"><%= admin.bio %></textarea>
-                      </div>
-                      <div class="form-group">
-                        <label for="picture">Profile Picture</label>
-                        <input type="file" id="picture" name="picture" class="form-control-file">
-                      </div>
-                      <button type="submit" class="btn btn-primary">Update Profile</button>
-                    </form>
-                  </div>
+                    <div class="card-body">
+                        <h4 class="card-title">Update Profile</h4>
+                        <form action="/profile" method="POST" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="username" name="username" class="form-control" value="<%= admin.username %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input disabled type="email" id="email" name="email" class="form-control" value="<%= admin.email %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="picture">Profile Picture</label>
+                                <input type="file" id="picture" name="picture" class="form-control-file">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    </div>
                 </div>
-              </div>
+            </div>
             </div>
           </div>
         </div>
