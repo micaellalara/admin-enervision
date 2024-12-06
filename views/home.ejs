@@ -46,7 +46,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Right Panel with Text and Buttons */
         .right-panel {
             flex: 1.5;
             background-color: #F0E8D9;
@@ -75,7 +74,6 @@
             max-width: 85%;
         }
 
-        /* Decorative Artsy Elements */
         .right-panel::before,
         .right-panel::after {
             content: '';
@@ -101,9 +99,8 @@
             background: radial-gradient(circle at 50% 50%, #A7C5BD, #E5E8B6);
         }
 
-        /* Buttons */
         .btn-custom {
-            background-color: #3D5A40; /* Calm earthy green */
+            background-color: #3D5A40;
             color: white;
             padding: 12px 40px;
             font-size: 18px;
@@ -113,14 +110,12 @@
             transition: all 0.3s ease;
         }
 
-        /* Hover effect for buttons */
         .btn-custom:hover {
-            background-color: #81B29A; /* Lighter green for hover */
-            color: #F4F1DE; /* Slightly off-white text on hover */
+            background-color: #247968; 
+            color: #F4F1DE;
             box-shadow: 0 8px 20px rgba(129, 178, 154, 0.6);
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .split-container {
                 flex-direction: column;
@@ -141,18 +136,16 @@
 
 <body>
     <div class="split-container">
-        <!-- Left Panel with Image -->
         <div class="left-panel">
             <img src="/images/enervision.png" alt="EnerVision Logo">
         </div>
 
-        <!-- Right Panel with Welcome Message and Buttons -->
         <div class="right-panel">
             <h1>Welcome to EnerVision Dashboard!</h1>
             <p>Begin your journey with us to a greener, smarter energy future.</p>
             <div>
-                <a href="/login" class="btn btn-custom">Login</a>
-                <a href="/register" class="btn btn-custom">Sign Up</a>
+                <a href="/login" class="btn btn-custom" style="width: 250px;">Login</a>
+                <!-- <a href="/register" class="btn btn-custom">Sign Up</a> -->
             </div>
         </div>
     </div>
