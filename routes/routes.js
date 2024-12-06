@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const Post = require('../model/posts');
+const Suggestion = require('../model/suggestions.model');
 const Admin = require('../model/admins');
 const User = require('../model/users');
 const UserProfile = require('../model/profile.model');
@@ -48,13 +49,13 @@ router.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newAdmin = new User({
-            username: username, 
+            username: username,
             email: email,
             password: hashedPassword,
-            role: 'admin', 
-            kwhRate: 0, 
-            status: 'active', 
-            postCount: 0, 
+            role: 'admin',
+            kwhRate: 0,
+            status: 'active',
+            postCount: 0,
         });
 
         await newAdmin.save();
@@ -77,38 +78,30 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Find the user by email
         const user = await User.findOne({ email });
 
-        // Check if user exists
         if (!user) {
             return res.render('login', { errorMessage: 'Email not found' });
         }
 
-        // Log user for debugging purposes
         console.log(user);
 
-        // Check if the password is valid
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             return res.render('login', { errorMessage: 'Invalid password' });
         }
 
-        // Check if the user has admin role
         if (user.role !== 'admin') {
             return res.render('login', { errorMessage: 'You do not have admin access' });
         }
 
-        // Create the payload for the JWT
         const payload = { user: { userId: user._id, role: user.role } };
 
         const jwtSecret = process.env.JWT_SECRET || "4715aed3c946f7b0a38e6b534a9583628d84e96d10fbc04700770d572af3dce43625dd";
 
-        // Sign the JWT
         jwt.sign(payload, jwtSecret, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
-            
-            // Set the token in the cookie
+
             res.cookie('token', token, { httpOnly: true });
             res.redirect('/dashboard');
         });
@@ -223,7 +216,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
         if (!admin) return res.status(404).send('Admin not found');
-        
+
         const users = await User.find();
         const userIds = users.map(user => user._id);
         const userProfiles = await UserProfile.find({ userId: { $in: userIds } });
@@ -357,7 +350,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
 
 router.get('/userposts', authenticateToken, async (req, res) => {
     try {
-     const admin = await User.findById(req.user.userId).select('-password');
+        const admin = await User.findById(req.user.userId).select('-password');
         if (!admin) return res.status(404).send('Admin not found');
 
         const searchTerm = req.query.username || '';
@@ -408,7 +401,7 @@ router.post('/createPost', authenticateToken, async (req, res) => {
         });
 
         await newPost.save();
-        res.status(201).json({ success: true, message: 'Post created successfully' }); 
+        res.status(201).json({ success: true, message: 'Post created successfully' });
     } catch (err) {
         console.error('Error creating post:', err);
         res.status(500).send('Server Error');
@@ -465,7 +458,8 @@ router.get('/flaggedPosts', authenticateToken, async (req, res) => {
 
         const flaggedPosts = await Post.find({ flagged: true }).populate('userId', 'username uploadPhoto');
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
         res.render('flaggedPosts', {
             flaggedPosts: flaggedPosts,
@@ -482,9 +476,10 @@ router.get('/deletedPosts', authenticateToken, async (req, res) => {
         const deletedPosts = await Post.find({ deletedAt: { $ne: null } })
             .populate('userId', 'username uploadPhoto');
 
-            const admin = await User.findById(req.user.userId).select('-password');
-            if (!admin) {return res.status(404).send('Admin not found');
-            }
+        const admin = await User.findById(req.user.userId).select('-password');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
 
 
         deletedPosts.forEach(post => {
@@ -550,11 +545,89 @@ router.post('/unflagPost/:postId', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/posts-with-suggestions', authenticateToken, async (req, res) => {
+    try {
+        const admin = await User.findById(req.user.userId).select('-password');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+
+        const users = await User.find().select('username _id').lean();
+
+        const posts = await Post.find()
+            .populate({
+                path: 'suggestions',
+                model: 'Suggestion',
+                select: 'suggestionText suggestionDate userId',
+                populate: {
+                    path: 'userId',
+                    model: 'User',
+                    select: 'username',
+                },
+            })
+            .populate({
+                path: 'userId',
+                model: 'User',
+                select: 'username',
+            })
+            .lean();
+
+        res.render('postsWithSuggestions', { users, posts, admin });
+    } catch (error) {
+        console.error('Error fetching posts with suggestions:', error);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.post('/addSuggestion/:postId', authenticateToken, async (req, res) => {
+    const { suggestionText } = req.body;
+    const postId = req.params.postId;
+
+    try {
+        console.log('Authenticated user:', req.user);
+
+        if (!req.user || !req.user.userId) {
+            return res.status(400).send('User ID is missing');
+        }
+
+        const admin = await User.findById(req.user.userId).select('-password'); 
+        if (!admin) {
+            return res.status(404).send('Admin not found');
+        }
+
+        const newSuggestion = new Suggestion({
+            suggestionText,
+            postId,
+            userId: req.user.userId,  
+            suggestionDate: new Date(),
+            deletedAt: null,
+        });
+
+        await newSuggestion.save();
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).send('Post not found');
+        }
+
+        post.suggestions.push(newSuggestion._id);
+        await post.save();
+
+        res.redirect(`/posts-with-suggestions`);
+    } catch (error) {
+        console.error('Error adding suggestion:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         res.render('profile', { admin });
@@ -601,7 +674,8 @@ router.post('/profile', authenticateToken, upload.single('picture'), async (req,
 router.get('/user-profiles', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
         const searchTerm = req.query.username || '';
         const currentPage = parseInt(req.query.page) || 1;
@@ -753,7 +827,8 @@ router.get('/faqs', authenticateToken, async (req, res) => {
         const faqs = await FAQ.find();
 
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         res.render('faqs', { faqs, admin });
@@ -771,7 +846,8 @@ router.post('/faqs', authenticateToken, async (req, res) => {
         const savedFAQ = await newFAQ.save();
 
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         res.status(201).redirect('/faqs');
@@ -810,7 +886,8 @@ router.delete('/faqs/:id', authenticateToken, async (req, res) => {
 router.get('/chats', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         const chats = await Chat.find({});
@@ -826,7 +903,8 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
 
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
         const chat = await Chat.findOne({ userId });
 
@@ -877,7 +955,8 @@ router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
 
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         const chat = await Chat.findOne({ 'userId': userId });
@@ -906,7 +985,8 @@ router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
 router.get('/devices', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
         const devices = await Device.find();  // Fetch all devices
 
@@ -1002,12 +1082,13 @@ router.delete('/devices/delete/:id', authenticateToken, async (req, res) => {
 router.get('/providers', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
-        if (!admin) {return res.status(404).send('Admin not found');
+        if (!admin) {
+            return res.status(404).send('Admin not found');
         }
 
         const providers = await EnergyProvider.find();
 
-        res.render('energyProvider', { providers, admin }); 
+        res.render('energyProvider', { providers, admin });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
