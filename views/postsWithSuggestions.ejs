@@ -366,12 +366,19 @@
                             <tbody style="text-align: center;">
                               <% post.suggestions.forEach(suggestion => { %>
                                 <tr>
-                                  <td><%= suggestion.userId.username %></td>
+                                  <td>
+                                    <% if (suggestion.userId) { %>
+                                      <%= suggestion.userId.username %>
+                                    <% } else { %>
+                                      Unknown User
+                                    <% } %>
+                                  </td>
                                   <td><%= new Date(suggestion.suggestionDate).toLocaleDateString() %></td>
                                   <td><%= suggestion.suggestionText %></td>
                                 </tr>
                               <% }) %>
                             </tbody>
+                            
                           </table>
                         <% } else { %>
                           <p style="margin-top: 10px;">No suggestions have been added yet.</p>
