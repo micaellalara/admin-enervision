@@ -107,7 +107,9 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-            <span aria-hidden="true">&times;</span>
+            </button>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
@@ -121,7 +123,7 @@
       </div>
     </div>
     <div class="container-fluid page-body-wrapper">
-      <div class="theme-setting-wrapper">
+      <!-- <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
@@ -142,211 +144,142 @@
             <div class="tiles default"></div>
           </div>
         </div>
-      </div>
-      <div id="right-sidebar" class="settings-panel">
-        <i class="settings-close ti-close"></i>
-        <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab"
-              aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
-          </li>
-        </ul>
-        <div class="tab-content" id="setting-content">
-          <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel"
-            aria-labelledby="todo-section">
-            <div class="add-items d-flex px-3 mb-0">
-              <form class="form w-100">
-                <div class="form-group d-flex">
-                  <input type="text" class="form-control todo-list-input" placeholder="Add To-do">
-                  <button type="submit" class="add btn btn-primary todo-list-add-btn" id="add-task">Add</button>
-                </div>
-              </form>
-            </div>
-            <div class="list-wrapper px-3">
-              <ul class="d-flex flex-column-reverse todo-list">
-                <li>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input class="checkbox" type="checkbox">
-                      Team review meeting at 3.00 PM
-                    </label>
-                  </div>
-                  <i class="remove ti-close"></i>
-                </li>
-                <li>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input class="checkbox" type="checkbox">
-                      Prepare for presentation
-                    </label>
-                  </div>
-                  <i class="remove ti-close"></i>
-                </li>
-                <li>
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input class="checkbox" type="checkbox">
-                      Resolve all the low priority tickets due today
-                    </label>
-                  </div>
-                  <i class="remove ti-close"></i>
-                </li>
-                <li class="completed">
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input class="checkbox" type="checkbox" checked>
-                      Schedule meeting for next week
-                    </label>
-                  </div>
-                  <i class="remove ti-close"></i>
-                </li>
-                <li class="completed">
-                  <div class="form-check">
-                    <label class="form-check-label">
-                      <input class="checkbox" type="checkbox" checked>
-                      Project review
-                    </label>
-                  </div>
-                  <i class="remove ti-close"></i>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+      </div> -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/dashboard">
-              <i class="icon-grid menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#profile-elements" aria-expanded="false"
-              aria-controls="profile-elements">
-              <i class="icon-columns menu-icon"></i>
-              <span class="menu-title">Profile</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="profile-elements">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="/profile">Admin Profile</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/user-profiles">User Profile</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#user-posts" aria-expanded="false"
-              aria-controls="user-posts">
-              <i class="icon-columns menu-icon"></i>
-              <span class="menu-title">User Posts</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="user-posts">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="/userposts">All Posts</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="">Reported Posts</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-
-
-
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
-              <i class="icon-bar-graph menu-icon"></i>
-              <span class="menu-title">kWh Rate</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="charts">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="/providers">Providers</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
-              <i class="icon-grid-2 menu-icon"></i>
-              <span class="menu-title">Suggestions</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="tables">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="/posts-with-suggestions">Posts Suggestions</a></li>
-              </ul>
-              
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#postStatus" aria-expanded="false"
-              aria-controls="postStatus">
-              <i class="icon-contract menu-icon"></i>
-              <span class="menu-title">Post Status</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="postStatus">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="/deletedPosts">Deleted Posts</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/flaggedPosts">Flagged Posts</a>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#faqs" aria-expanded="false" aria-controls="faqs">
-              <i class="icon-contract menu-icon"></i>
-              <span class="menu-title">FAQs</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="faqs">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item">
-                  <a class="nav-link" href="/faqs">QAs</a>
-                </li>
-              </ul>
-            </div>
             <li class="nav-item">
-              <a class="nav-link" data-toggle="collapse" href="#chats" aria-expanded="false" aria-controls="chats">
-                <i class="icon-contract menu-icon"></i>
-                <span class="menu-title">Intercom Chats</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="chats">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item">
-                    <a class="nav-link" href="/chats">Chats</a>
-                  </li>
-                </ul>
-              </div>
+                <a class="nav-link" href="/dashboard">
+                    <i class="icon-grid menu-icon"></i>
+                    <span class="menu-title">Dashboard</span>
+                </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false" aria-controls="tables">
-                <i class="icon-grid-2 menu-icon"></i>
-                <span class="menu-title">Appliances</span>
-                <i class="menu-arrow"></i>
-              </a>
-              <div class="collapse" id="devices">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
-                </ul>
-              </div>
+                <a class="nav-link" data-toggle="collapse" href="#profile-elements" aria-expanded="false"
+                    aria-controls="profile-elements">
+                    <i class="icon-columns menu-icon"></i>
+                    <span class="menu-title">Profile</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="profile-elements">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile">Admin Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/user-profiles">User Profile</a>
+                        </li>
+                    </ul>
+                </div>
             </li>
-          </li>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#user-posts" aria-expanded="false"
+                    aria-controls="user-posts">
+                    <i class="icon-columns menu-icon"></i>
+                    <span class="menu-title">User Posts</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="user-posts">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/userposts">All Posts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">Reported Posts</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#charts" aria-expanded="false"
+                    aria-controls="charts">
+                    <i class="icon-bar-graph menu-icon"></i>
+                    <span class="menu-title">kWh Rate</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="charts">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="/providers">Providers</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false"
+                    aria-controls="tables">
+                    <i class="icon-grid-2 menu-icon"></i>
+                    <span class="menu-title">Suggestions</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="tables">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="/posts-with-suggestions">Posts Suggestions</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#postStatus" aria-expanded="false"
+                    aria-controls="postStatus">
+                    <i class="icon-contract menu-icon"></i>
+                    <span class="menu-title">Post Status</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="postStatus">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/deletedPosts">Deleted Posts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/flaggedPosts">Flagged Posts</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#faqs" aria-expanded="false"
+                    aria-controls="faqs">
+                    <i class="icon-contract menu-icon"></i>
+                    <span class="menu-title">FAQs</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="faqs">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/faqs">QAs</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#chats" aria-expanded="false"
+                    aria-controls="chats">
+                    <i class="icon-contract menu-icon"></i>
+                    <span class="menu-title">Intercom Chats</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="chats">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/chats">Chats</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false" aria-controls="devices">
+                  <i class="icon-grid-2 menu-icon"></i>
+                  <span class="menu-title">Appliances</span>
+                  <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="devices">
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
+                  </ul>
+                </div>
+              </li>
         </ul>
-      </nav>
+    </nav>
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
@@ -395,7 +328,7 @@
             <div class="col-md-6 grid-margin transparent">
               <div class="row">
                 <div class="col-md-6 mb-4 stretch-card transparent">
-                  <div class="card card-tale">
+                  <div class="card card-sage-card">
                     <div class="card-body">
                       <p class="mb-4">Today’s New Registered Users</p>
                       <p class="fs-30 mb-2">
@@ -405,7 +338,7 @@
                   </div>
                 </div>
                 <div class="col-md-6 mb-4 stretch-card transparent">
-                  <div class="card card-dark-blue">
+                  <div class="card card-dark-card">
                     <div class="card-body">
                       <p class="mb-4">Total Registered Users</p>
                       <p class="fs-30 mb-2">
@@ -418,7 +351,7 @@
 
               <div class="row">
                 <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
-                  <div class="card card-light-blue">
+                  <div class="card card-medium-card">
                     <div class="card-body">
                       <p class="mb-4">Number of Posts Added Today</p>
                       <p class="fs-30 mb-2">
@@ -428,7 +361,7 @@
                   </div>
                 </div>
                 <div class="col-md-6 stretch-card transparent">
-                  <div class="card card-light-danger">
+                  <div class="card card-light-card">
                     <div class="card-body">
                       <p class="mb-4">Total Appliances Added Today</p>
                       <p class="fs-30 mb-2">
@@ -514,9 +447,9 @@
                       <input type="date" id="end-date" class="form-control date-picker" />
                     </div>
                   </div>
-
-                  <button id="filter-button" class="btn btn-primary-date">Filter</button>
-
+                  <center>
+                  <button id="filter-button" class="btn btn-primary" style="width: 50%;">Filter</button>
+                </center>
                   <div class="chart-container mt-4">
                     <canvas id="chart" style="height: 400px; width: 100%;"></canvas>
                   </div>
@@ -672,7 +605,6 @@
                 }
               });
 
-              // Filter by date range
               document.getElementById('filter-button').addEventListener('click', function () {
                 const startDate = document.getElementById('start-date').value;
                 const endDate = document.getElementById('end-date').value;
@@ -682,7 +614,6 @@
                   return;
                 }
 
-                // Make an API call to get new data for the selected date range
                 fetch(`/api/average-appliances?start=${startDate}&end=${endDate}`)
                   .then(response => response.json())
                   .then(data => {
@@ -712,7 +643,7 @@
                               <th>Email</th>
                               <th>Role</th>
                               <th>Status</th>
-                              <th>Occupation</th>
+                              <th>Community Guidelines?</th>
                               <th>Created At</th>
                               <th>Post Count</th>
                             </tr>
@@ -739,7 +670,7 @@
                                   <%= user.status %>
                                 </td>
                                 <td>
-                                  <%= user.occupation %>
+                                  <%= user.communityGuidelinesAccepted %>
                                 </td>
                                 <td>
                                   <%= new Date(user.createdAt).toLocaleString() %>
@@ -758,16 +689,19 @@
               </div>
             </div>
           </div>
+          </div>
+          </div>
+          </div>
           <footer class="footer">
             <div class="d-sm-flex justify-content-center ">
-              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
-                EnerVision</a> from
-                PNPh Class of 2024 | All rights reserved.</span>
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+                    EnerVision</a> from
+                    PNPh Class of 2024 | All rights reserved.</span>
             </div>
-          </footer>
+        </footer>
         </div>
       </div>
-
+      </div>
       <script src="vendors/js/vendor.bundle.base.js"></script>
       <script src="vendors/chart.js/Chart.min.js"></script>
       <script src="vendors/datatables.net/jquery.dataTables.js"></script>

@@ -53,7 +53,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-            <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
@@ -67,7 +68,7 @@
       </div>
     </div>
     <div class="container-fluid page-body-wrapper">
-      <div class="theme-setting-wrapper">
+      <!-- <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
@@ -88,7 +89,7 @@
             <div class="tiles default"></div>
           </div>
         </div>
-      </div>
+      </div> -->
       <div id="right-sidebar" class="settings-panel">
         <i class="settings-close ti-close"></i>
         <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
@@ -304,49 +305,49 @@
               <% if (flaggedPosts.length===0) { %>
                 <p>No posts have been flagged.</p>
                 <% } else { %>
-              <table class="table table-bordered">
-                <thead class="thead-light" style="text-align: center; vertical-align: middle;">
-                  <tr>
-                    <th>User</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody style="text-align: center; vertical-align: middle;">
-                  <% flaggedPosts.forEach(post=> { %>
-                    <tr data-post-id="<%= post._id %>">
-                      <td>
-                        <%= post.userId ? post.userId.username : 'User not found' %>
-                      </td>
-                      <td>
-                        <%= post.title %>
-                      </td>
-                      <td>
-                        <%= post.description %>
-                      </td>
-                      <td>
-                        <% if (post.uploadPhoto) { %>
-                          <img src="<%= post.uploadPhoto %>" alt="Post Image" style="max-width: 100px;"
-                            class="img-thumbnail">
-                          <% } else { %>
-                            <span>No Image</span>
-                            <% } %>
-                      </td>
-                      <td>
-                        <%= new Date(post.createdAt).toLocaleDateString() %>
-                      </td>
-                      <td>
-                        <button class="btn btn-success btn-sm"
-                          onclick="showUnflagPostModal('<%= post._id %>')">Unflag</button>
-                      </td>
-                    </tr>
-                    <% }) %>
-                </tbody>
-              </table>
-              <% } %>
+                  <table class="table table-bordered">
+                    <thead class="thead-light" style="text-align: center; vertical-align: middle;">
+                      <tr>
+                        <th>User</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody style="text-align: center; vertical-align: middle;">
+                      <% flaggedPosts.forEach(post=> { %>
+                        <tr data-post-id="<%= post._id %>">
+                          <td>
+                            <%= post.userId ? post.userId.username : 'User not found' %>
+                          </td>
+                          <td>
+                            <%= post.title %>
+                          </td>
+                          <td>
+                            <%= post.description %>
+                          </td>
+                          <td>
+                            <% if (post.uploadPhoto) { %>
+                              <img src="<%= post.uploadPhoto %>" alt="Post Image" style="max-width: 100px;"
+                                class="img-thumbnail">
+                              <% } else { %>
+                                <span>No Image</span>
+                                <% } %>
+                          </td>
+                          <td>
+                            <%= new Date(post.createdAt).toLocaleDateString() %>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm"
+                              onclick="showUnflagPostModal('<%= post._id %>')">Unflag</button>
+                          </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                  </table>
+                  <% } %>
             </div>
           </div>
         </div>
@@ -368,59 +369,68 @@
           </div>
         </div>
       </div>
-
-      <script>
-        let currentUnflagPostId = null; // Store the current post ID for unflagging
-
-        function showUnflagPostModal(postId) {
-          currentUnflagPostId = postId; // Store the current post ID
-          $('#unflagPostModal').modal('show'); // Show the modal
-        }
-
-        document.getElementById('confirmUnflagButton').addEventListener('click', function () {
-          if (currentUnflagPostId) {
-            fetch(`/unflagPost/${currentUnflagPostId}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              }
-            })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  alert('Post has been successfully unflagged.');
-
-                  // Remove the unflagged post from the DOM
-                  const postRow = document.querySelector(`[data-post-id="${currentUnflagPostId}"]`);
-                  if (postRow) {
-                    postRow.remove();
-                  }
-                } else {
-                  alert('Error unflagging post: ' + data.error);
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing your request. Please try again.');
-              });
-            $('#unflagPostModal').modal('hide'); // Hide the modal after processing
-          }
-        });
-      </script>
-
-
-      <script src="vendors/js/vendor.bundle.base.js"></script>
-      <script src="vendors/datatables.net/jquery.dataTables.js"></script>
-      <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
-      <script src="js/dataTables.select.min.js"></script>
-      <script src="js/off-canvas.js"></script>
-      <script src="js/hoverable-collapse.js"></script>
-      <script src="js/template.js"></script>
-      <script src="js/settings.js"></script>
-      <script src="js/todolist.js"></script>
-      <script src="js/Chart.roundedBarCharts.js"></script>
-
     </div>
+    <footer class="footer">
+      <div class="d-sm-flex justify-content-center ">
+        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+          EnerVision</a> from
+          PNPh Class of 2024 | All rights reserved.</span>
+      </div>
+    </footer>
+  </div>
+  </div>
+  </div>
+  <script>
+    let currentUnflagPostId = null; 
+
+    function showUnflagPostModal(postId) {
+      currentUnflagPostId = postId;
+      $('#unflagPostModal').modal('show'); 
+    }
+
+    document.getElementById('confirmUnflagButton').addEventListener('click', function () {
+      if (currentUnflagPostId) {
+        fetch(`/unflagPost/${currentUnflagPostId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Post has been successfully unflagged.');
+
+              const postRow = document.querySelector(`[data-post-id="${currentUnflagPostId}"]`);
+              if (postRow) {
+                postRow.remove();
+              }
+            } else {
+              alert('Error unflagging post: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your request. Please try again.');
+          });
+        $('#unflagPostModal').modal('hide'); 
+      }
+    });
+  </script>
+
+
+  <script src="vendors/js/vendor.bundle.base.js"></script>
+  <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+  <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+  <script src="js/dataTables.select.min.js"></script>
+  <script src="js/off-canvas.js"></script>
+  <script src="js/hoverable-collapse.js"></script>
+  <script src="js/template.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/todolist.js"></script>
+  <script src="js/Chart.roundedBarCharts.js"></script>
+
+  </div>
   </div>
 </body>
 

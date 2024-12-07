@@ -50,27 +50,31 @@ const userSchema = new Schema({
         default: 0,
     },
     banReason: {
-        type: String // New field for ban reason
+        type: String
     },
     banDate: {
-        type: Date // New field for ban date
+        type: Date
     },
     appliances: [{
         type: Schema.Types.ObjectId,
-        ref: 'Appliance' // New field for appliances reference
+        ref: 'Appliance'
     }],
     posts: [{
         type: Schema.Types.ObjectId,
-        ref: 'Post' // New field for posts reference
+        ref: 'Post'
     }],
     energyDiary: [{
         type: Schema.Types.ObjectId,
-        ref: 'EnergyDiary' // New field for energy diary reference
+        ref: 'EnergyDiary'
     }],
     deletedAt: {
         type: Date,
-        default: null // New field for soft delete
-    }
+        default: null
+    },
+    communityGuidelinesAccepted: {
+        type: Boolean,
+        default: false, 
+      },
 
 }, { timestamps: true });
 

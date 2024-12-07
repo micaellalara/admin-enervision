@@ -40,7 +40,7 @@
               </a>
             </div>
           </li>
-         
+
         </ul>
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
           data-toggle="offcanvas">
@@ -54,7 +54,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-            <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
@@ -68,7 +69,7 @@
       </div>
     </div>
     <div class="container-fluid page-body-wrapper">
-      <div class="theme-setting-wrapper">
+      <!-- <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
         <div id="theme-settings" class="settings-panel">
           <i class="settings-close ti-close"></i>
@@ -89,7 +90,7 @@
             <div class="tiles default"></div>
           </div>
         </div>
-      </div>
+      </div> -->
       <div id="right-sidebar" class="settings-panel">
         <i class="settings-close ti-close"></i>
         <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
@@ -158,7 +159,7 @@
                 </li>
               </ul>
             </div>
-           
+
           </div>
         </div>
       </div>
@@ -305,8 +306,8 @@
             </form>
 
             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-              <table class="table table-bordered">
-                <thead class="thead-light" style="text-align: center; vertical-align: middle;">
+              <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark" style="text-align: center; vertical-align: middle;">
                   <tr>
                     <th>Question</th>
                     <th>Answer</th>
@@ -321,76 +322,104 @@
                     <% } else { %>
                       <% faqs.forEach(faq=> { %>
                         <tr>
-                          <td>
+                          <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <%= faq.question %>
                           </td>
-                          <td>
+                          <td style="max-width: 400px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             <%= faq.answer %>
                           </td>
                           <td>
                             <button class="btn btn-warning" data-toggle="modal"
                               data-target="#editModal<%= faq._id %>">Edit</button>
-                            <form action="/faqs/<%= faq._id %>?_method=DELETE" method="POST" style="display:inline;">
-                              <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-
+                            <button type="button" class="btn btn-danger" data-toggle="modal"
+                              data-target="#deleteModal-<%= faq._id %>">
+                              Delete
+                            </button>
                           </td>
-                        </tr>
+                            <div class="modal fade" id="deleteModal-<%= faq._id %>" tabindex="-1"
+                              aria-labelledby="deleteModalLabel-<%= faq._id %>" aria-hidden="true">
+                              <div class="modal-dialog">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel-<%= faq._id %>">Confirm Deletion</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    Are you sure you want to delete this FAQ? This action cannot be undone.
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                      data-dismiss="modal">Cancel</button>
 
-                        <div class="modal fade" id="editModal<%= faq._id %>" tabindex="-1" role="dialog"
-                          aria-labelledby="editModalLabel<%= faq._id %>" aria-hidden="true">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel<%= faq._id %>">Edit FAQ</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
+                                    <form action="/faqs/<%= faq._id %>?_method=DELETE" method="POST"
+                                      style="display:inline;">
+                                      <button type="submit" class="btn btn-danger">Confirm</button>
+                                    </form>
+                                  </div>
+                                </div>
                               </div>
-                              <form action="/faqs/<%= faq._id %>?_method=PUT" method="POST">
-                                <div class="modal-body">
-                                  <input type="text" name="question" value="<%= faq.question %>" required
-                                    class="form-control mb-2">
-                                  <textarea name="answer" required
-                                    class="form-control mb-2"><%= faq.answer %></textarea>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  <button type="submit" class="btn btn-primary">Save changes</button>
-                                </div>
-                              </form>
                             </div>
-                          </div>
-                        </div>
 
-                        <% }); %>
-                          <% } %>
+
+                            <div class="modal fade" id="editModal<%= faq._id %>" tabindex="-1" role="dialog"
+                              aria-labelledby="editModalLabel<%= faq._id %>" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="editModalLabel<%= faq._id %>">Edit FAQ</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <form action="/faqs/<%= faq._id %>?_method=PUT" method="POST">
+                                    <div class="modal-body">
+                                      <div class="form-group">
+                                        <label for="question">Question</label>
+                                        <input type="text" name="question" value="<%= faq.question %>" required
+                                          class="form-control mb-2">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="answer">Answer</label>
+                                        <textarea name="answer" required
+                                          class="form-control mb-2"><%= faq.answer %></textarea>
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Close</button>
+                                      <button type="submit" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+
+                            <% }); %>
+                              <% } %>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
-            </div>
-            <div class="modal-body">
-              Modal Content
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
+</div>
+      <footer class="footer">
+        <div class="d-sm-flex justify-content-center ">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+                EnerVision</a> from
+                PNPh Class of 2024 | All rights reserved.</span>
         </div>
-      </div>
+    </footer>
 
       <script>
+        // Example to add event listener for specific behavior if needed
+        document.querySelectorAll('.btn-danger').forEach(button => {
+          button.addEventListener('click', event => {
+            console.log("Delete button clicked for FAQ");
+          });
+        });
       </script>
 
 

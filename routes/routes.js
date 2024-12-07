@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
             return res.render('login', { errorMessage: 'Email not found' });
         }
 
-        console.log(user);
+
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -231,6 +231,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             const userPosts = postsByUser.find(post => post._id.equals(user._id));
             return {
                 id: user._id,
+                communityGuidelinesAccepted: user.communityGuidelinesAccepted,
                 username: user.username,
                 kwhRate: user.kwhRate,
                 email: user.email,
@@ -339,6 +340,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
             userCounts,
             applianceDays,
             averageApplianceCounts,
+            communityGuidelinesAccepted: users.communityGuidelinesAccepted ? 'Accepted' : 'Not Accepted',
         });
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -640,28 +642,22 @@ router.get('/profile', authenticateToken, async (req, res) => {
 router.post('/profile', authenticateToken, upload.single('picture'), async (req, res) => {
     try {
         const { username } = req.body;
-        // Check if there's a file uploaded, if yes, save its path
         const picture = req.file ? '/images/' + req.file.filename : null;
 
-        // Prepare the fields that need to be updated
         const updatedFields = { username };
         if (picture) {
-            updatedFields.picture = picture;  // Add the picture field if a file was uploaded
+            updatedFields.picture = picture;  
         }
 
-        // Find the user (admin in this case)
         const admin = await User.findById(req.user.userId).select('-password');
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
 
-        // Update the user's profile with the new fields
         await User.findByIdAndUpdate(req.user.userId, updatedFields, { new: true });
 
-        // After update, fetch the updated user data again
         const updatedAdmin = await User.findById(req.user.userId).select('-password');
 
-        // Render the profile page with a success message
         res.render('profile', { admin: updatedAdmin, successMessage: 'Profile updated successfully' });
 
     } catch (error) {
@@ -761,6 +757,7 @@ router.get('/user/:id', authenticateToken, async (req, res) => {
             occupation: profile ? profile.occupation : 'Not specified',
             address: profile ? profile.address : 'Not specified',
             banDate: profile ? profile.banDate : null,
+            communityGuidelinesAccepted: user.communityGuidelinesAccepted,
             postCount: userPosts.length > 0 ? userPosts[0].postCount : 0,
             applianceCount
         });
@@ -790,13 +787,24 @@ router.post('/user-profiles/deleteUser/:id', async (req, res) => {
     const userId = req.params.id;
 
     try {
-        await User.findByIdAndDelete(userId);
+        const postCount = await Post.countDocuments({ userId });
+        const applianceCount = await Appliance.countDocuments({ userId });
+        const suggestionCount = await Suggestion.countDocuments({ userId });
+
+        await User.findByIdAndUpdate(userId, { status: 'deleted' });
+
+        await Post.updateMany({ userId }, { status: 'deleted' });
+        await Appliance.updateMany({ userId }, { status: 'deleted' });
+        await Suggestion.updateMany({ userId }, { status: 'deleted' });
+        console.log(`User deleted. Posts deleted: ${postCount}, Appliances deleted: ${applianceCount}, Suggestions deleted: ${suggestionCount}.`);
+
         res.redirect('/user-profiles');
     } catch (error) {
-        console.error('Error deleting user:', error);
+        console.error('Error soft deleting user and related data:', error);
         res.redirect('/user-profiles');
     }
 });
+
 
 router.post('/user-profiles/banUser/:id', async (req, res) => {
     const userId = req.params.id;
@@ -818,9 +826,27 @@ router.post('/user-profiles/unbanUser/:id', async (req, res) => {
 
 router.post('/user-profiles/restoreUser/:id', async (req, res) => {
     const userId = req.params.id;
-    await User.findByIdAndUpdate(userId, { status: 'active' });
-    res.redirect('/user-profiles');
+
+    try {
+        const postCount = await Post.countDocuments({ userId, status: 'deleted' });
+        const applianceCount = await Appliance.countDocuments({ userId, status: 'deleted' });
+        const suggestionCount = await Suggestion.countDocuments({ userId, status: 'deleted' });
+
+        await User.findByIdAndUpdate(userId, { status: 'active' });
+
+        await Post.updateMany({ userId, status: 'deleted' }, { status: 'active' });
+        await Appliance.updateMany({ userId, status: 'deleted' }, { status: 'active' });
+        await Suggestion.updateMany({ userId, status: 'deleted' }, { status: 'active' });
+
+        console.log(`User restored. Posts restored: ${postCount}, Appliances restored: ${applianceCount}, Suggestions restored: ${suggestionCount}.`);
+
+        res.redirect('/user-profiles');
+    } catch (error) {
+        console.error('Error restoring user and related data:', error);
+        res.redirect('/user-profiles');
+    }
 });
+
 
 router.get('/faqs', authenticateToken, async (req, res) => {
     try {
