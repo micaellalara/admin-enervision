@@ -180,17 +180,18 @@
                 </button>
                 <ul class="navbar-nav navbar-nav-right">
                     <li class="nav-item nav-profile dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                        <img src="<%= admin.picture %>" alt="profile" />
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                        <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
-                          <i class="ti-power-off text-primary"></i>
-                          Logout
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+                            <img src="<%= admin.picture %>" alt="profile" />
                         </a>
-                      </div>
+                        <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
+                            aria-labelledby="profileDropdown">
+                            <a href="#" class="dropdown-item" data-toggle="modal" data-target="#logoutModal">
+                                <i class="ti-power-off text-primary"></i>
+                                Logout
+                            </a>
+                        </div>
                     </li>
-                  </ul>
+                </ul>
                 <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
                     data-toggle="offcanvas">
                     <span class="icon-menu"></span>
@@ -205,7 +206,7 @@
                         <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                          </button>
+                        </button>
                     </div>
                     <div class="modal-body">
                         Are you sure you want to log out?
@@ -240,78 +241,7 @@
                     </div>
                 </div>
             </div> -->
-            <div id="right-sidebar" class="settings-panel">
-                <i class="settings-close ti-close"></i>
-                <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="todo-tab" data-toggle="tab" href="#todo-section" role="tab"
-                            aria-controls="todo-section" aria-expanded="true">TO DO LIST</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="setting-content">
-                    <div class="tab-pane fade show active scroll-wrapper" id="todo-section" role="tabpanel"
-                        aria-labelledby="todo-section">
-                        <div class="add-items d-flex px-3 mb-0">
-                            <form class="form w-100">
-                                <div class="form-group d-flex">
-                                    <input type="text" class="form-control todo-list-input" placeholder="Add To-do">
-                                    <button type="submit" class="add btn btn-primary todo-list-add-btn"
-                                        id="add-task">Add</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="list-wrapper px-3">
-                            <ul class="d-flex flex-column-reverse todo-list">
-                                <li>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="checkbox" type="checkbox">
-                                            Team review meeting at 3.00 PM
-                                        </label>
-                                    </div>
-                                    <i class="remove ti-close"></i>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="checkbox" type="checkbox">
-                                            Prepare for presentation
-                                        </label>
-                                    </div>
-                                    <i class="remove ti-close"></i>
-                                </li>
-                                <li>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="checkbox" type="checkbox">
-                                            Resolve all the low priority tickets due today
-                                        </label>
-                                    </div>
-                                    <i class="remove ti-close"></i>
-                                </li>
-                                <li class="completed">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="checkbox" type="checkbox" checked>
-                                            Schedule meeting for next week
-                                        </label>
-                                    </div>
-                                    <i class="remove ti-close"></i>
-                                </li>
-                                <li class="completed">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="checkbox" type="checkbox" checked>
-                                            Project review
-                                        </label>
-                                    </div>
-                                    <i class="remove ti-close"></i>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
@@ -380,7 +310,8 @@
                         </a>
                         <div class="collapse" id="tables">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="/posts-with-suggestions">Posts Suggestions</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="/posts-with-suggestions">Posts
+                                        Suggestions</a></li>
                             </ul>
                         </div>
                     </li>
@@ -433,17 +364,18 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false" aria-controls="tables">
-                          <i class="icon-grid-2 menu-icon"></i>
-                          <span class="menu-title">Appliances</span>
-                          <i class="menu-arrow"></i>
+                        <a class="nav-link" data-toggle="collapse" href="#devices" aria-expanded="false"
+                            aria-controls="tables">
+                            <i class="icon-grid-2 menu-icon"></i>
+                            <span class="menu-title">Appliances</span>
+                            <i class="menu-arrow"></i>
                         </a>
                         <div class="collapse" id="devices">
-                          <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
-                          </ul>
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link" href="/devices">Efficient Appliances</a></li>
+                            </ul>
                         </div>
-                      </li>
+                    </li>
                 </ul>
             </nav>
             <div class="main-panel">
@@ -459,8 +391,7 @@
                                         <li class="list-group-item user-item">
                                             <a href="#" class="user-link" data-userid="<%= chat.userId %>">
                                                 <div class="user-info">
-                                                    <strong>User Name:</strong>
-                                                    <%= chat.userName %>
+                                                    <%= chat.username %>
                                                 </div>
                                                 <div class="last-message">
                                                     <small>
@@ -476,11 +407,11 @@
                                     <% } %>
                                 <% }) %>
                             </ul>
-                            
+
                             </ul>
-                            
+
                         </div>
-        
+
                         <div class="col-md-9" id="chat-window">
                             <div class="chat-header">
                                 <h3>Conversation</h3>
@@ -489,101 +420,101 @@
                                 <p class="placeholder-message">Select a user to view their messages</p>
                             </div>
                             <div class="chat-input mt-3">
-                                <textarea id="message-input" class="form-control" rows="2" placeholder="Type your message here..."></textarea>
+                                <textarea id="message-input" class="form-control" rows="2"
+                                    placeholder="Type your message here..."></textarea>
                                 <button class="btn btn-primary mt-2" id="send-button">Send</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center ">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
+                    EnerVision</a> from
+                    PNPh Class of 2024 | All rights reserved.</span>
             </div>
-            <footer class="footer">
-                <div class="d-sm-flex justify-content-center ">
-                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024 |
-                        EnerVision</a> from
-                        PNPh Class of 2024 | All rights reserved.</span>
-                </div>
-            </footer>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        
-            <script>
-                $(document).ready(function () {
-                    const firstUser = $('#user-list .user-link').first();
-                    if (firstUser.length) {
-                        loadChat(firstUser.data('userid'));
-                        firstUser.addClass('active');
-                    }
-        
-                    $(document).on('click', '.user-link', function (e) {
-                        e.preventDefault();
-                        const userId = $(this).data('userid');
-                        $('.user-link').removeClass('active');
-                        $(this).addClass('active');
-                        loadChat(userId);
-                    });
-        
-                    function loadChat(userId) {
-                        $.get(`/chats/${userId}`, function (data) {
-                            const messagesContainer = $('#messages-list');
-                            messagesContainer.html('');  // Clear the previous messages
-        
-                            if (data.messages && data.messages.length > 0) {
-                                data.messages.forEach(function (message) {
-                                    let messageClass = message.sender === 'admin' ? 'admin-message' : 'user-message';
-                                    messagesContainer.append(`
-                                        <div class="message-bubble mt-2 ${messageClass}">
-                                            <div class="message-text">${message.message}</div>
-                                            <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
-                                        </div>
-                                    `);
-                                });
-                            } else {
-                                messagesContainer.append('<p>No messages found for this user.</p>');
-                            }
-        
-                            // Scroll to the bottom after new messages are added
-                            messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
-                        }).fail(function (err) {
-                            console.error('Error fetching chat messages:', err);
-                            alert('Error fetching chat messages. Please check the console for more details.');
-                        });
-                    }
-        
-                    $('#send-button').on('click', function () {
-                        const message = $('#message-input').val().trim();
-                        const userId = $('.user-link.active').data('userid');
-        
-                        if (message && userId) {
-                            $.post(`/chats/${userId}/reply`, { message: message }, function (response) {
-                                loadChat(userId);  // Reload the chat with the new reply
-                                $('#message-input').val('');  // Clear the input field
-                            }).fail(function (err) {
-                                console.error('Error sending message:', err);
-                                alert('Error sending message. Please check the console for more details.');
+        </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                const firstUser = $('#user-list .user-link').first();
+                if (firstUser.length) {
+                    loadChat(firstUser.data('userid'));
+                    firstUser.addClass('active');
+                }
+
+                $(document).on('click', '.user-link', function (e) {
+                    e.preventDefault();
+                    const userId = $(this).data('userid');
+                    $('.user-link').removeClass('active');
+                    $(this).addClass('active');
+                    loadChat(userId);
+                });
+
+                function loadChat(userId) {
+                    $.get(`/chats/${userId}`, function (data) {
+                        const messagesContainer = $('#messages-list');
+                        messagesContainer.html('');
+
+                        if (data.messages && data.messages.length > 0) {
+                            data.messages.forEach(function (message) {
+                                let messageClass = message.sender === 'admin' ? 'admin-message' : 'user-message';
+                                messagesContainer.append(`
+                    <div class="message-bubble mt-2 ${messageClass}">
+                        <div class="message-text">${message.message}</div>
+                        <small class="message-time">${new Date(message.timestamp).toLocaleString()}</small>
+                    </div>
+                `);
                             });
                         } else {
-                            alert('Please select a user and enter a message.');
+                            messagesContainer.append('<p>No messages found for this user.</p>');
                         }
+
+                        messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
+                    }).fail(function (err) {
+                        console.error('Error fetching chat messages:', err);
+                        alert('Error fetching chat messages. Please check the console for more details.');
                     });
+                }
+
+                $('#send-button').on('click', function () {
+                    const message = $('#message-input').val().trim();
+                    const userId = $('.user-link.active').data('userid');
+
+                    if (message && userId) {
+                        $.post(`/chats/${userId}/reply`, { message: message }, function (response) {
+                            loadChat(userId); 
+                            $('#message-input').val(''); 
+                        }).fail(function (err) {
+                            console.error('Error sending message:', err);
+                            alert('Error sending message. Please check the console for more details.');
+                        });
+                    } else {
+                        alert('Please select a user and enter a message.');
+                    }
                 });
-            </script>
+            });
+        </script>
 
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-            <script src="vendors/js/vendor.bundle.base.js"></script>
-            <script src="vendors/datatables.net/jquery.dataTables.js"></script>
-            <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
-            <script src="js/dataTables.select.min.js"></script>
-            <script src="js/off-canvas.js"></script>
-            <script src="js/hoverable-collapse.js"></script>
-            <script src="js/template.js"></script>
-            <script src="js/settings.js"></script>
-            <script src="js/todolist.js"></script>
-            <script src="js/Chart.roundedBarCharts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="vendors/js/vendor.bundle.base.js"></script>
+        <script src="vendors/datatables.net/jquery.dataTables.js"></script>
+        <script src="vendors/datatables.net-bs4/dataTables.bootstrap4.js"></script>
+        <script src="js/dataTables.select.min.js"></script>
+        <script src="js/off-canvas.js"></script>
+        <script src="js/hoverable-collapse.js"></script>
+        <script src="js/template.js"></script>
+        <script src="js/settings.js"></script>
+        <script src="js/todolist.js"></script>
+        <script src="js/Chart.roundedBarCharts.js"></script>
 
 
-        </div>
+    </div>
     </div>
 </body>
 

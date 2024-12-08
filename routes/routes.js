@@ -909,6 +909,7 @@ router.delete('/faqs/:id', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
 router.get('/chats', authenticateToken, async (req, res) => {
     try {
         const admin = await User.findById(req.user.userId).select('-password');
@@ -916,13 +917,23 @@ router.get('/chats', authenticateToken, async (req, res) => {
             return res.status(404).send('Admin not found');
         }
 
-        const chats = await Chat.find({});
+        const chats = await Chat.find({})
+            .populate('userId', 'username') 
+            .exec();
 
-        res.render('adminChats', { chats, admin });
+        const formattedChats = chats.map(chat => ({
+            userId: chat.userId._id,
+            username: chat.userId.username,
+            messages: chat.messages, 
+        }));
+
+        res.render('adminChats', { chats: formattedChats, admin });
     } catch (error) {
+        console.error('Error fetching chats:', error);
         res.status(500).json({ message: error.message });
     }
 });
+
 
 router.get('/chats/:userId', authenticateToken, async (req, res) => {
     const userId = req.params.userId;
@@ -932,14 +943,13 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
         if (!admin) {
             return res.status(404).send('Admin not found');
         }
-        const chat = await Chat.findOne({ userId });
 
+        const chat = await Chat.findOne({ userId });
         if (!chat) {
             return res.status(404).json({ error: 'Chat not found for this user' });
         }
 
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -959,9 +969,14 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
 
         allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
+        if (req.xhr) {
+            return res.json({ messages: allMessages, userName: user.username });
+        }
+
         res.render('adminChats', {
             chats: allMessages,
-            userName: user.username
+            userName: user.username,
+            admin
         });
 
     } catch (error) {
@@ -969,6 +984,7 @@ router.get('/chats/:userId', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 router.post('/chats/:userId/reply', authenticateToken, async (req, res) => {
