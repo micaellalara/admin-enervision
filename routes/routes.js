@@ -925,8 +925,8 @@ router.get('/chats', authenticateToken, async (req, res) => {
             // Check if chat.userId exists before accessing its properties
             if (!chat.userId) {
                 return {
-                    userId: null,   // Or some default value
-                    username: 'Unknown', // Default username if user is missing
+                    userId: null,
+                    username: 'Unknown',
                     messages: chat.messages,
                 };
             }
