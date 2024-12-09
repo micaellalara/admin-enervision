@@ -921,11 +921,22 @@ router.get('/chats', authenticateToken, async (req, res) => {
             .populate('userId', 'username') 
             .exec();
 
-        const formattedChats = chats.map(chat => ({
-            userId: chat.userId._id,
-            username: chat.userId.username,
-            messages: chat.messages, 
-        }));
+        const formattedChats = chats.map(chat => {
+            // Check if chat.userId exists before accessing its properties
+            if (!chat.userId) {
+                return {
+                    userId: null,   // Or some default value
+                    username: 'Unknown', // Default username if user is missing
+                    messages: chat.messages,
+                };
+            }
+
+            return {
+                userId: chat.userId._id,
+                username: chat.userId.username,
+                messages: chat.messages,
+            };
+        });
 
         res.render('adminChats', { chats: formattedChats, admin });
     } catch (error) {
